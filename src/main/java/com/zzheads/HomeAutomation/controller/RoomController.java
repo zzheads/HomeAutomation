@@ -1,4 +1,4 @@
-package com.zzheads.HomeAutomation.web.controller;//
+package com.zzheads.HomeAutomation.controller;//
 
 import com.zzheads.HomeAutomation.model.Room;
 import com.zzheads.HomeAutomation.service.ControlService;

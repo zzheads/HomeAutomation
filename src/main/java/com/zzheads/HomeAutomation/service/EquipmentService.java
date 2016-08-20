@@ -9,6 +9,7 @@ import java.util.List;
 //
 public interface EquipmentService {
     List<Equipment> findAll();
+    List<Equipment> findByRoom(Long roomId);
     Equipment findById(Long id);
     Equipment findByName(String name);
     Long save(Equipment equipment);

@@ -10,6 +10,7 @@ import java.util.List;
 //
 public interface EquipmentDao {
     List<Equipment> findAll();
+    List<Equipment> findByRoom(Long roomId);
     Equipment findById(Long id);
     Equipment findByName(String name);
     Long save(Equipment equipment);

@@ -19,6 +19,10 @@ public class EquipmentsServiceImpl implements EquipmentService {
         return equipmentDao.findAll();
     }
 
+    @Override public List<Equipment> findByRoom(Long roomId) {
+        return equipmentDao.findByRoom(roomId);
+    }
+
     @Override public Equipment findById(Long id) {
         return equipmentDao.findById(id);
     }

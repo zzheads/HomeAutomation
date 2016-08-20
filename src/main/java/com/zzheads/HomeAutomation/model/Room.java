@@ -1,14 +1,9 @@
 package com.zzheads.HomeAutomation.model;//
 
-import com.zzheads.HomeAutomation.web.controller.RoomController;
-import org.hibernate.Hibernate;
-import org.springframework.context.annotation.Lazy;
+import com.zzheads.HomeAutomation.controller.RoomController;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // HomeAutomation
 // com.zzheads.HomeAutomation.model created by zzheads on 20.08.2016.
@@ -73,6 +68,16 @@ public class Room {
 
     public void setEquipments(List<Equipment> equipments) {
         this.equipments = equipments;
+    }
+
+    public void addEquipment(Equipment equipment) {
+        equipments.add(equipment);
+    }
+
+    public void removeEquipment(Equipment equipment) {
+        for (int i=0;i<equipments.size();i++) {
+            if (Objects.equals(equipments.get(i).getId(), equipment.getId())) equipments.remove(i);
+        }
     }
 
     private Map[] getLinks(){
