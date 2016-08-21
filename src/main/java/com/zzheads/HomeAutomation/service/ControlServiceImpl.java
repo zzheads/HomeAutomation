@@ -19,6 +19,10 @@ public class ControlServiceImpl implements ControlService {
         return controlDao.findAll();
     }
 
+    @Override public List<Control> findByEquipment(Long equipmentId) {
+        return controlDao.findByEquipment(equipmentId);
+    }
+
     @Override public Control findById(Long id) {
         return controlDao.findById(id);
     }

@@ -5,10 +5,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // HomeAutomation
 // com.zzheads.HomeAutomation.model created by zzheads on 20.08.2016.
@@ -108,6 +105,16 @@ public class Equipment {
             res.get(i).put("_links", equipments.get(i).getLinks());
         }
         return res;
+    }
+
+    public void addControl(Control control) {
+        controls.add(control);
+    }
+
+    public void removeControl(Control control) {
+        for (int i=0;i<controls.size();i++) {
+            if (Objects.equals(controls.get(i).getId(), control.getId())) controls.remove(i);
+        }
     }
 
 }

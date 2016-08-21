@@ -9,6 +9,7 @@ import java.util.List;
 //
 public interface ControlService {
     List<Control> findAll();
+    List<Control> findByEquipment(Long equipmentId);
     Control findById(Long id);
     Control findByName(String name);
     Long save(Control control);

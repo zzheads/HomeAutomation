@@ -1,6 +1,7 @@
 package com.zzheads.HomeAutomation.dao;//
 
 import com.zzheads.HomeAutomation.model.Control;
+import com.zzheads.HomeAutomation.model.Equipment;
 import com.zzheads.HomeAutomation.model.Room;
 
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 //
 public interface ControlDao {
     List<Control> findAll();
+    List<Control> findByEquipment(Long equipmentId);
     Control findById(Long id);
     Control findByName(String name);
     Long save(Control control);

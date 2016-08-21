@@ -5,6 +5,8 @@ import com.zzheads.HomeAutomation.model.Room;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 // HomeAutomation
 // com.zzheads.HomeAutomation.dao created by zzheads on 20.08.2016.
@@ -14,6 +16,10 @@ public class ControlDaoImpl extends CrudDaoImpl implements ControlDao {
     @SuppressWarnings("unchecked")
     @Override public List<Control> findAll() {
         return super.findAll(Control.class);
+    }
+
+    @Override public List<Control> findByEquipment(Long equipmentId) {
+        return findAll().stream().filter(c -> Objects.equals(c.getEquipment().getId(), equipmentId)).collect(Collectors.toList());
     }
 
     @Override public Control findById(Long id) {
