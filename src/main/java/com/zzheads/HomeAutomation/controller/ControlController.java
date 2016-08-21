@@ -79,7 +79,7 @@ public class ControlController {
         Control control = controlService.findById(controlId);
         control.setValue(req);
         controlService.save(control);
-        return control.jsonValue();
+        return controlService.findById(controlId).jsonValue();
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}/control/{controlId}/value", method = RequestMethod.GET, produces = {"application/json"})

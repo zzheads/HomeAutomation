@@ -68,20 +68,23 @@ public class Equipment {
         this.room = room;
     }
 
-    private Map[] getLinks() {
-        Map <String, String> linksSelf = new HashMap<>();
-        linksSelf.put("rel", "self");
-        linksSelf.put("href", RoomController.BASE_URL+"room/"+room.getId()+"/equipment/"+id);
-        Map <String, String> linksParent = new HashMap<>();
-        linksParent.put("rel", "parent");
-        linksParent.put("href", RoomController.BASE_URL+"room/"+room.getId());
-        Map <String, String> linksControl = new HashMap<>();
-        linksControl.put("rel", "control");
-        linksControl.put("href", RoomController.BASE_URL+"room/"+room.getId()+"/equipment/"+id+"/control");
-        Map[] links = new Map[3];
-        links[0] = linksSelf;
-        links[1] = linksParent;
-        links[2] = linksControl;
+    @SuppressWarnings("unchecked")
+    private List<Map> getLinks() {
+        List<Map> links = new ArrayList<>();
+        final String parentString = RoomController.BASE_URL+"room/"+room.getId()+"/equipment";
+        final String selfString = parentString + "/"+id;
+        final String controlString = selfString + "/control";
+
+        links.add(new HashMap<>());
+        links.get(0).put("rel", "self");
+        links.get(0).put("href", selfString);
+        links.add(new HashMap<>());
+        links.get(1).put("rel", "parent");
+        links.get(1).put("href", parentString);
+        links.add(new HashMap<>());
+        links.get(2).put("rel", "control");
+        links.get(2).put("href", controlString);
+
         return links;
     }
 

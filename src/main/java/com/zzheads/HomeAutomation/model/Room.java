@@ -83,16 +83,19 @@ public class Room {
         }
     }
 
-    private Map[] getLinks(){
-        Map <String, String> linksSelf = new HashMap<>();
-        linksSelf.put("rel", "self");
-        linksSelf.put("href", RoomController.BASE_URL+"room/"+id);
-        Map <String, String> linksEquipment = new HashMap<>();
-        linksEquipment.put("rel", "equipment");
-        linksEquipment.put("href", RoomController.BASE_URL+"room/"+id+"/equipment");
-        Map[] links = new Map[2];
-        links[0] = linksSelf;
-        links[1] = linksEquipment;
+    @SuppressWarnings("unchecked")
+    private List<Map> getLinks(){
+        List<Map> links = new ArrayList<>();
+        final String selfString = RoomController.BASE_URL + "room/" + id;
+        final String equipmentString = selfString + "/equipment";
+
+        links.add(new HashMap<>());
+        links.get(0).put("rel", "self");
+        links.get(0).put("href", selfString);
+        links.add(new HashMap<>());
+        links.get(1).put("rel", "equipment");
+        links.get(1).put("href", equipmentString);
+
         return links;
     }
 
@@ -106,6 +109,7 @@ public class Room {
         return res;
     }
 
+    @SuppressWarnings("unchecked")
     public static List Json(List<Room> rooms) {
         List<Map> res = new ArrayList<>();
 

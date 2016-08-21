@@ -5,10 +5,9 @@ import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,7 +67,8 @@ public class Control {
         for (char c : string.toCharArray()) {
             if (Character.isDigit(c) || c=='.' || c==',') result+=c;
         }
-        this.value = BigDecimal.valueOf(Double.parseDouble(result));
+        double d = Double.parseDouble(result);
+        this.value = BigDecimal.valueOf(d);
     }
 
     public Equipment getEquipment() {
@@ -80,26 +80,23 @@ public class Control {
     }
 
     // True - links for control, false - for value
-    private Map[] getLinks(boolean linksForControlOrValue) {
-        Map[] links;
-        Map <String, String> linksSelf = new HashMap<>();
-        linksSelf.put("rel", "self");
-        linksSelf.put("href", RoomController.BASE_URL+"room/"+equipment.getRoom().getId()+"/equipment/"+equipment.getId()+"/control/"+id);
-        Map <String, String> linksParents = new HashMap<>();
-        linksParents.put("rel", "parent");
-        linksParents.put("href", RoomController.BASE_URL+"room/"+equipment.getRoom().getId()+"/equipment");
-        Map <String, String> linksValue = new HashMap<>();
-        linksValue.put("rel", "value");
-        linksValue.put("href", RoomController.BASE_URL+"room/"+equipment.getRoom().getId()+"/equipment/"+equipment.getId()+"/control/"+id+"/value");
+    @SuppressWarnings("unchecked")
+    private List<Map> getLinks(boolean linksForControlOrValue) {
+        List<Map> links = new ArrayList<>();
+        final String parentString = RoomController.BASE_URL+"room/"+equipment.getRoom().getId()+"/equipment";
+        final String selfString = parentString + "/"+equipment.getId()+"/control/"+id;
+        final String valueString = selfString + "/value";
+
+        links.add(new HashMap<>());
+        links.get(0).put("rel", "self");
+        links.get(0).put("href", selfString);
+        links.add(new HashMap<>());
+        links.get(1).put("rel", "parent");
+        links.get(1).put("href", parentString);
         if (linksForControlOrValue) {
-            links = new Map[3];
-            links[0] = linksSelf;
-            links[1] = linksParents;
-            links[2] = linksValue;
-        } else {
-            links = new Map[2];
-            links[0] = linksSelf;
-            links[1] = linksParents;
+            links.add(new HashMap<>());
+            links.get(2).put("rel", "value");
+            links.get(2).put("href", valueString);
         }
         return links;
     }
