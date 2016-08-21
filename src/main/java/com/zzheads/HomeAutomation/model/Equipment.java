@@ -1,6 +1,8 @@
 package com.zzheads.HomeAutomation.model;//
 
 import com.zzheads.HomeAutomation.controller.RoomController;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,7 +19,8 @@ public class Equipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "equipment", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "equipment", cascade = CascadeType.ALL)
     private List<Control> controls;
     @ManyToOne
     private Room room;
