@@ -84,7 +84,7 @@ public class ControlController {
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}/control/{controlId}/value", method = RequestMethod.GET, produces = {"application/json"})
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody Map getValue(@RequestBody String req, @PathVariable Long roomId, @PathVariable Long equipmentId, @PathVariable Long controlId) {
+    public @ResponseBody Map getValue(@PathVariable Long roomId, @PathVariable Long equipmentId, @PathVariable Long controlId) {
         Control control = controlService.findById(controlId);
         return control.jsonValue();
     }
