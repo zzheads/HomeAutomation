@@ -36,7 +36,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "/room", method = RequestMethod.POST, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.OK)
+    @ResponseStatus (HttpStatus.CREATED)
     public @ResponseBody String addRoom(@RequestBody Map<String, String> req) throws DaoException {
         if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Room room = new Room(req);
@@ -52,9 +52,9 @@ public class RoomController {
     }
 
     @RequestMapping(value = "/room/{id}", method = RequestMethod.PUT, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.OK)
+    @ResponseStatus (HttpStatus.CREATED)
     public @ResponseBody String updateRoom(@RequestBody Map<String, String> req, @PathVariable Long id) throws DaoException {
-        if (requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
+        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Room room = new Room(req);
         room.setId(id);
         roomService.save(room);
@@ -70,7 +70,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "/room/{id}", method = RequestMethod.DELETE, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.OK)
+    @ResponseStatus (HttpStatus.NO_CONTENT)
     public void deleteRoomById(@PathVariable Long id) throws DaoException {
         Room room = roomService.findById(id);
         if (room == null) throw new ApiErrorNotFound(404, String.format("Can't find room with %d id. (%s)", id, Thread.currentThread().getStackTrace()[1].toString()));

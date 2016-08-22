@@ -13,8 +13,6 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 
-sourceCompatibility = 1.8
-
 repositories {
     mavenCentral()
 }
@@ -28,5 +26,11 @@ dependencies {
     compile group: 'com.h2database', name: 'h2', version: '1.4.192'
     compile 'com.google.code.gson:gson:2.7'
 
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.dbunit:dbunit:2.5.1")
+    testCompile("com.github.springtestdbunit:spring-test-dbunit:1.2.1")
+    testCompile("org.assertj:assertj-core:3.2.0")
+    testCompile("net.sourceforge.htmlunit:htmlunit:2.20")
+    testCompile("org.easytesting:fest-assert:1.4")
     testCompile 'junit:junit:4.12'
 }

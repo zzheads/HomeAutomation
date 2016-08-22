@@ -13,7 +13,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("app.properties")
+@PropertySource("file:${properties.home}app.properties")
 public class DataConfig {
     @Autowired
     private Environment env;
@@ -31,17 +31,10 @@ public class DataConfig {
     @Bean
     public DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();
-
-        // Driver class name
         ds.setDriverClassName(env.getProperty("HomeAutomation.db.driver"));
-
-        // Set URL
         ds.setUrl(env.getProperty("HomeAutomation.db.url"));
-
-        // Set username & password
         ds.setUsername(env.getProperty("HomeAutomation.db.username"));
         ds.setPassword(env.getProperty("HomeAutomation.db.password"));
-
         return ds;
     }
 }

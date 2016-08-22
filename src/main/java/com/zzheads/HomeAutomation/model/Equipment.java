@@ -39,6 +39,10 @@ public class Equipment {
         this.controls = controls;
     }
 
+    public Equipment(String s) {
+        this.name = s;
+    }
+
     public Long getId() {
         return id;
     }
@@ -72,6 +76,7 @@ public class Equipment {
     }
 
     public void addControl(Control control) {
+        if (controls == null) controls = new ArrayList<>();
         controls.add(control);
     }
 
@@ -134,5 +139,27 @@ public class Equipment {
     public static String toJson(List<Equipment> equipments) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new EquipmentSerializer()).setPrettyPrinting().create();
         return gson.toJson(equipments);
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Equipment))
+            return false;
+
+        Equipment equipment = (Equipment) o;
+
+        return getId() != null ?
+            getId().equals(equipment.getId()) :
+            equipment.getId() == null && (getName() != null ?
+                getName().equals(equipment.getName()) :
+                equipment.getName() == null);
+
+    }
+
+    @Override public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        return result;
     }
 }

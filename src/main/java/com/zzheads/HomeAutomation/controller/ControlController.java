@@ -35,7 +35,7 @@ public class ControlController {
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}/control", method = RequestMethod.POST, produces = {"application/json"})
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody String addControl(@RequestBody Map<String, String> req, @PathVariable Long roomId, @PathVariable Long equipmentId) throws DaoException {
         if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", expectedRequestFormat, Thread.currentThread().getStackTrace()[1].toString()));
         Equipment equipment = equipmentService.findById(equipmentId);

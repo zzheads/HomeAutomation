@@ -19,19 +19,25 @@ package com.zzheads.HomeAutomation;
 //      Extra Credit
 //
 // TODO:     Use a third party mocking library, such as Mockito, for unit testing.
-// TODO:     Use @ExceptionHandler annotations and @ResponseStatus annotations for exception handling.
+// DONE:     Use @ExceptionHandler annotations and @ResponseStatus annotations for exception handling.
 // DONE:     Create a custom endpoint for retrieving all rooms, equipment, controls, and values.
 
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+@SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan
 public class Application {
 
     public static final String BASE_URL ="http://localhost:8080/";
+
+    static {
+        System.setProperty("properties.home", "E:/Projects/HomeAutomation/properties/");
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

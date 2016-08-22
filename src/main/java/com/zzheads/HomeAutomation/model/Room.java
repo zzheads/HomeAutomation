@@ -52,6 +52,12 @@ public class Room {
         this.equipments = equipments;
     }
 
+    public Room(Long id, String name, int squareFootage) {
+        this.id = id;
+        this.name = name;
+        this.squareFootage = squareFootage;
+    }
+
     public Long getId() {
         return id;
     }
@@ -85,6 +91,7 @@ public class Room {
     }
 
     public void addEquipment(Equipment equipment) {
+        if (equipments == null) equipments = new ArrayList<>();
         equipments.add(equipment);
     }
 
@@ -112,7 +119,7 @@ public class Room {
         return gson.toJson(this);
     }
 
-    private static class RoomSerializer implements JsonSerializer<Room> {
+    public static class RoomSerializer implements JsonSerializer<Room> {
         @Override
         public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject result = new JsonObject();
@@ -124,19 +131,38 @@ public class Room {
         }
     }
 
-    private static class RoomDeserializer implements JsonDeserializer<Room> {
+    public static class RoomDeserializer implements JsonDeserializer<Room> {
         @Override
         public Room deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             if (jsonObject.get("roomName") == null || jsonObject.get("squareFootage") == null)
                 throw new ApiErrorBadRequest(400, String.format("%s (%s)", RoomController.EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
+            Long id = jsonObject.get("roomId").getAsLong();
             String name = jsonObject.get("roomName").getAsString();
             int squareFootage = jsonObject.get("squareFootage").getAsInt();
-            return new Room(name, squareFootage);
+            return new Room(id, name, squareFootage);
         }
     }
 
-    private static class RoomTreeSerializer implements JsonSerializer<Room> {
+    public static class ListRoomDeserializer implements JsonDeserializer<List<Room>> {
+        @Override
+        public List<Room> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonArray array = json.getAsJsonArray();
+            List<Room> rooms = new ArrayList<>();
+            for (JsonElement e : array) {
+                JsonObject o = (JsonObject) e;
+                Long id = o.get("roomId").getAsLong();
+                String name = o.get("roomName").getAsString();
+                int squareFootage = o.get("squareFootage").getAsInt();
+
+                rooms.add(new Room(id, name, squareFootage));
+            }
+            return rooms;
+        }
+    }
+
+
+    public static class RoomTreeSerializer implements JsonSerializer<Room> {
         @Override
         public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {
             Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new Equipment.EquipmentTreeSerializer()).create();
@@ -154,7 +180,7 @@ public class Room {
         }
     }
 
-    public static Room fromJson(JsonObject jsonObject) {
+    public static Room fromJson(String jsonObject) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomDeserializer()).create();
         return gson.fromJson(jsonObject, Room.class);
     }
@@ -167,5 +193,28 @@ public class Room {
     public static String toJsonTree(List<Room> rooms) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomTreeSerializer()).setPrettyPrinting().create();
         return gson.toJson(rooms);
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Room))
+            return false;
+
+        Room room = (Room) o;
+
+        return getSquareFootage() == room.getSquareFootage() && (getId() != null ?
+            getId().equals(room.getId()) :
+            room.getId() == null && (getName() != null ?
+                getName().equals(room.getName()) :
+                room.getName() == null));
+
+    }
+
+    @Override public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + getSquareFootage();
+        return result;
     }
 }

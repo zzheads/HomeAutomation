@@ -36,6 +36,10 @@ public class Control {
     public Control() {
     }
 
+    public Control(String name) {
+        this.name = name;
+    }
+
     // JSON constructor
     public Control(Map<String, String> map) {
         name = map.get("controlName");
@@ -171,5 +175,30 @@ public class Control {
     public static String toJsonValue(List<Control> equipments) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
         return gson.toJson(equipments);
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Control))
+            return false;
+
+        Control control = (Control) o;
+
+        return getId() != null ?
+            getId().equals(control.getId()) :
+            control.getId() == null && (getName() != null ?
+                getName().equals(control.getName()) :
+                control.getName() == null && (getValue() != null ?
+                    getValue().equals(control.getValue()) :
+                    control.getValue() == null));
+
+    }
+
+    @Override public int hashCode() {
+        int result = getId() != null ? getId().hashCode() : 0;
+        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
+        return result;
     }
 }
