@@ -86,11 +86,10 @@ public class RoomControllerTest {
             .registerTypeAdapter(List.class, new Room.ListRoomDeserializer())
             .setPrettyPrinting()
             .create();
-        clearAll();
     }
 
     @After public void tearDown() throws Exception {
-
+        clearAll();
     }
 
     @Test public void testAddRoom() throws Exception {
