@@ -2,6 +2,8 @@ package com.zzheads.HomeAutomation.controller;
 
 import com.google.gson.*;
 import com.zzheads.HomeAutomation.Application;
+import com.zzheads.HomeAutomation.config.DataConfig;
+import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import com.zzheads.HomeAutomation.model.Equipment;
@@ -11,15 +13,27 @@ import com.zzheads.HomeAutomation.service.EquipmentService;
 import com.zzheads.HomeAutomation.service.RoomService;
 import com.zzheads.HomeAutomation.testing.ApiClient;
 import com.zzheads.HomeAutomation.testing.ApiResponse;
+import org.eclipse.jetty.io.Connection;
+import org.hibernate.SessionFactory;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.validation.constraints.AssertTrue;
+
+import java.lang.reflect.Type;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -30,7 +44,7 @@ import static org.junit.Assert.*;
 //
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-public class ControlControllerTest {
+public class EquipmentControllerTest {
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     private RoomService roomService;
@@ -52,7 +66,6 @@ public class ControlControllerTest {
 
     private Room testingRoom = new Room("Testing room name", 152);
     private Equipment testingEquipment = new Equipment("Testing equipment name");
-    private Control testingControl = new Control("Testing Temperature");
 
     @SuppressWarnings("AccessStaticViaInstance")
     @BeforeClass
@@ -69,24 +82,18 @@ public class ControlControllerTest {
     @Before public void setUp() throws Exception {
         client = new ApiClient("http://localhost:8080");
         gson = new GsonBuilder()
-            .registerTypeAdapter(Control.class, new Control.ControlSerializer())
-            .registerTypeAdapter(Control.class, new Control.ControlDeserializer())
-            .registerTypeAdapter(List.class, new Control.ListControlDeserializer())
+            .registerTypeAdapter(Equipment.class, new Equipment.EquipmentSerializer())
+            .registerTypeAdapter(Equipment.class, new Equipment.EquipmentDeserializer())
+            .registerTypeAdapter(List.class, new Equipment.ListEquipmentDeserializer())
             .setPrettyPrinting()
             .create();
 
         roomService.save(testingRoom);
         equipmentService.save(testingEquipment);
-        controlService.save(testingControl);
-
         testingRoom.addEquipment(testingEquipment);
         testingEquipment.setRoom(testingRoom);
-        testingEquipment.addControl(testingControl);
-        testingControl.setEquipment(testingEquipment);
-
         roomService.save(testingRoom);
         equipmentService.save(testingEquipment);
-        controlService.save(testingControl);
     }
 
     @After public void tearDown() throws Exception {
@@ -94,67 +101,67 @@ public class ControlControllerTest {
     }
 
     @Test
-    public void testAddControl() throws Exception {
+    public void testAddEquipment() throws Exception {
+        assertEquals(1, equipmentService.findAll().size());
         Map<String, Object> values = new HashMap<>();
-        values.put("controlName", "cooling Temp");
+        values.put("equipmentName", "Kitchen");
 
-        ApiResponse res = client.request("POST", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control", gson.toJson(values));
+        ApiResponse res = client.request("POST", "/room/"+testingRoom.getId()+"/equipment", gson.toJson(values));
 
         assertEquals(HttpStatus.CREATED.value(), res.getStatus());
-        assertEquals(2, controlService.findAll().size());
+        assertEquals(2, equipmentService.findAll().size());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetAllControlsByEquipment() throws Exception {
-        Equipment equipment = new Equipment("Fan");
-        equipmentService.save(equipment);
+    public void testGetAllEquipmentByRoom() throws Exception {
+        Room room = new Room("Another room", 99);
+        roomService.save(room);
+        Equipment equipment1 = new Equipment("Thermostat");
+        equipment1.setRoom(testingRoom);
+        equipmentService.save(equipment1);
+        Equipment equipment2 = new Equipment("Fan");
+        equipment2.setRoom(testingRoom);
+        equipmentService.save(equipment2);
+        Equipment equipment3 = new Equipment("Fan");
+        equipment3.setRoom(room);
+        equipmentService.save(equipment3);
 
-        Control control1 = new Control("low Fan cicles");
-        control1.setEquipment(testingEquipment);
-        controlService.save(control1);
-        Control control2 = new Control("high Fan cicles");
-        control2.setEquipment(testingEquipment);
-        controlService.save(control2);
-        Control control3 = new Control("Other control");
-        control3.setEquipment(equipment);
-        controlService.save(control3);
-
-        ApiResponse res = client.request("GET", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control");
-        List<Control> controls = gson.fromJson(res.getBody(), List.class);
+        ApiResponse res = client.request("GET", "/room/"+testingRoom.getId()+"/equipment");
+        List<Equipment> equipments = gson.fromJson(res.getBody(), List.class);
 
         assertEquals(HttpStatus.OK.value(), res.getStatus());
-        assertEquals(3, controls.size());
+        assertEquals(3, equipments.size());
     }
 
     @Test
-    public void testUpdateControl() throws Exception {
+    public void testUpdateEquipment() throws Exception {
         Map<String, Object> values = new HashMap<>();
-        values.put("controlName", "Switch");
+        values.put("equipmentName", "Thermostat");
 
-        ApiResponse res = client.request("PUT", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control/"+testingControl.getId(), gson.toJson(values));
+        ApiResponse res = client.request("PUT", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId(), gson.toJson(values));
         assertEquals(HttpStatus.CREATED.value(), res.getStatus());
 
-        Control control = controlService.findById(testingControl.getId());
-        assertEquals(1, controlService.findAll().size());
-        assertEquals("Switch", control.getName());
+        Equipment equipment = equipmentService.findById(testingEquipment.getId());
+        assertEquals(1, equipmentService.findAll().size());
+        assertEquals("Thermostat", equipment.getName());
     }
 
     @Test
-    public void testGetControlById() throws Exception {
-        ApiResponse res = client.request("GET", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control/"+testingControl.getId());
+    public void testGetEquipmentById() throws Exception {
+        ApiResponse res = client.request("GET", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId());
         assertEquals(HttpStatus.OK.value(), res.getStatus());
-        Control found = gson.fromJson(res.getBody(), Control.class);
+        Equipment found = gson.fromJson(res.getBody(), Equipment.class);
 
-        assertEquals(found, testingControl);
+        assertEquals(found, testingEquipment);
     }
 
     @Test
-    public void testDeleteControlById() throws Exception {
-        ApiResponse res = client.request("DELETE", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control/"+testingControl.getId());
+    public void testDeleteEquipmentById() throws Exception {
+        ApiResponse res = client.request("DELETE", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId());
         assertEquals(HttpStatus.NO_CONTENT.value(), res.getStatus());
 
-        assertEquals(0, controlService.findAll().size());
+        assertEquals(0, equipmentService.findAll().size());
     }
 
 
@@ -166,5 +173,4 @@ public class ControlControllerTest {
         for (Room r : roomService.findAll())
             roomService.delete(r);
     }
-
 }

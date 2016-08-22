@@ -25,16 +25,16 @@ public class EquipmentController {
     @Autowired ControlService controlService;
 
 
-    private static final String expectedRequestFormat = "Can't make that request. Expected data format: {\"equipmentName\" : equipmentName}";
+    public static final String EXPECTED_REQUEST_FORMAT = "Can't make that request. Expected data format: {\"equipmentName\" : equipmentName}";
     private boolean requestOk (Map request) {
         return request.containsKey("equipmentName");
     }
 
 
     @RequestMapping(value = "/room/{roomId}/equipment", method = RequestMethod.POST, produces = {"application/json"})
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody String addEquipment(@RequestBody Map<String, String> req, @PathVariable Long roomId) throws DaoException {
-        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", expectedRequestFormat, Thread.currentThread().getStackTrace()[1].toString()));
+        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Equipment equipment = new Equipment(req);
         Room room = roomService.findById(roomId);
         if (room == null) throw new ApiErrorNotFound(404, String.format("Can't find room with %d id. (%s)", roomId, Thread.currentThread().getStackTrace()[1].toString()));
@@ -52,9 +52,9 @@ public class EquipmentController {
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}", method = RequestMethod.PUT, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.OK)
+    @ResponseStatus (HttpStatus.CREATED)
     public @ResponseBody String updateEquipment(@RequestBody Map<String, String> req, @PathVariable Long roomId, @PathVariable Long equipmentId) throws DaoException {
-        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", expectedRequestFormat, Thread.currentThread().getStackTrace()[1].toString()));
+        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Room room = roomService.findById(roomId);
         if (room == null) throw new ApiErrorNotFound(404, String.format("Can't find room with %d id. (updateEquipment method)", roomId));
         Equipment equipmentOld = equipmentService.findById(equipmentId);
@@ -80,7 +80,7 @@ public class EquipmentController {
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}", method = RequestMethod.DELETE, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.OK)
+    @ResponseStatus (HttpStatus.NO_CONTENT)
     public void deleteEquipmentById(@PathVariable Long roomId, @PathVariable Long equipmentId) throws DaoException {
         Room room = roomService.findById(roomId);
         if (room == null) throw new ApiErrorNotFound(404, String.format("Can't find room with %d id. (%s)", roomId, Thread.currentThread().getStackTrace()[1].toString()));

@@ -2,7 +2,9 @@ package com.zzheads.HomeAutomation.model;//
 
 import com.google.gson.*;
 import com.zzheads.HomeAutomation.Application;
+import com.zzheads.HomeAutomation.controller.EquipmentController;
 import com.zzheads.HomeAutomation.controller.RoomController;
+import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -41,6 +43,11 @@ public class Equipment {
 
     public Equipment(String s) {
         this.name = s;
+    }
+
+    public Equipment(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Long getId() {
@@ -108,13 +115,41 @@ public class Equipment {
         return gson.toJson(this);
     }
 
-    private static class EquipmentSerializer implements JsonSerializer<Equipment> {
+    public static class EquipmentSerializer implements JsonSerializer<Equipment> {
         @Override
         public JsonElement serialize(Equipment src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject result = new JsonObject();
             result.addProperty("equipmentId", String.valueOf(src.getId()));
             result.addProperty("equipmentName", src.getName());
             result.add("_links", src.getLinks());
+            return result;
+        }
+    }
+
+    public static class EquipmentDeserializer implements JsonDeserializer<Equipment> {
+        @Override public Equipment deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            if (jsonObject.get("equipmentName") == null)
+                throw new ApiErrorBadRequest(400, String.format("%s (%s)", EquipmentController.EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
+            Long id = jsonObject.get("equipmentId").getAsLong();
+            String name = jsonObject.get("equipmentName").getAsString();
+            return new Equipment(id, name);
+        }
+    }
+
+    public static class ListEquipmentDeserializer implements JsonDeserializer<List<Equipment>> {
+        @Override public List<Equipment> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonArray array = json.getAsJsonArray();
+            List<Equipment> result = new ArrayList<>();
+            for (JsonElement e : array) {
+                JsonObject jsonObject = e.getAsJsonObject();
+                if (jsonObject.get("equipmentName") == null)
+                    throw new ApiErrorBadRequest(400, String.format("%s (%s)", EquipmentController.EXPECTED_REQUEST_FORMAT,
+                        Thread.currentThread().getStackTrace()[1].toString()));
+                Long id = jsonObject.get("equipmentId").getAsLong();
+                String name = jsonObject.get("equipmentName").getAsString();
+                result.add(new Equipment(id, name));
+            }
             return result;
         }
     }

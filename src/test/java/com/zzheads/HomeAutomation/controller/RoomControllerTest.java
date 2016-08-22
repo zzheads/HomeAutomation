@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class RoomControllerTest {
-    private static Application app;
+
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     private RoomService roomService;
@@ -70,15 +70,13 @@ public class RoomControllerTest {
     @BeforeClass
     public static void startServer() {
         String[] args = {PORT, TEST_DATASOURCE};
-        app = new Application();
-        app.main(args);
+        Application.main(args);
     }
 
     @AfterClass
     public static void stopServer() {
-
+        SpringApplication.exit(Application.getAppContext(), (ExitCodeGenerator) () -> 0);
     }
-
 
     @Before public void setUp() throws Exception {
         client = new ApiClient("http://localhost:8080");
@@ -207,7 +205,6 @@ public class RoomControllerTest {
         assertTrue(!Objects.equals(rooms.get(0).getId(), id1) && !Objects.equals(rooms.get(1).getId(), id1));
     }
 
-
     private void clearAll() throws DaoException {
         for (Control c : controlService.findAll())
             controlService.delete(c);
@@ -216,5 +213,4 @@ public class RoomControllerTest {
         for (Room r : roomService.findAll())
             roomService.delete(r);
     }
-
 }

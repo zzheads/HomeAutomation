@@ -12,11 +12,10 @@
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
-      <configuration>
+      <configuration process_explicitly_annotated="false">
         <fileset id="fileset" name="Spring Application Context" removed="false">
           <file>file://$MODULE_DIR$/src/main/java/com/zzheads/HomeAutomation/config/AppConfig.java</file>
           <file>file://$MODULE_DIR$/src/main/java/com/zzheads/HomeAutomation/config/DataConfig.java</file>
-          <file>file://$MODULE_DIR$/src/main/java/com/zzheads/HomeAutomation/config/TemplateConfig.java</file>
           <file>file://$MODULE_DIR$/src/main/java/com/zzheads/HomeAutomation/Application.java</file>
           <file>file://$MODULE_DIR$/src/main/java/com/zzheads/HomeAutomation/Application.java</file>
         </fileset>

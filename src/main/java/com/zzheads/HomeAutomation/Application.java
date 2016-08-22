@@ -26,6 +26,7 @@ package com.zzheads.HomeAutomation;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
@@ -34,12 +35,21 @@ import org.springframework.context.annotation.ComponentScan;
 public class Application {
 
     public static final String BASE_URL ="http://localhost:8080/";
+    private static ConfigurableApplicationContext appContext;
 
     static {
         System.setProperty("properties.home", "E:/Projects/HomeAutomation/properties/");
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        appContext = SpringApplication.run(Application.class, args);
+    }
+
+    public static ConfigurableApplicationContext getAppContext() {
+        return appContext;
+    }
+
+    public static void setAppContext(ConfigurableApplicationContext appContext) {
+        Application.appContext = appContext;
     }
 }

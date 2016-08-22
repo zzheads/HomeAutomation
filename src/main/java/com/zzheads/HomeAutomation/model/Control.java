@@ -2,7 +2,10 @@ package com.zzheads.HomeAutomation.model;//
 
 import com.google.gson.*;
 import com.zzheads.HomeAutomation.Application;
+import com.zzheads.HomeAutomation.controller.ControlController;
+import com.zzheads.HomeAutomation.controller.EquipmentController;
 import com.zzheads.HomeAutomation.controller.RoomController;
+import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 import javax.persistence.*;
@@ -43,6 +46,11 @@ public class Control {
     // JSON constructor
     public Control(Map<String, String> map) {
         name = map.get("controlName");
+    }
+
+    public Control(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Long getId() {
@@ -134,13 +142,41 @@ public class Control {
         return gson.toJson(this);
     }
 
-    private static class ControlSerializer implements JsonSerializer<Control> {
+    public static class ControlSerializer implements JsonSerializer<Control> {
         @Override
         public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject result = new JsonObject();
             result.addProperty("controlId", String.valueOf(src.getId()));
             result.addProperty("controlName", src.getName());
             result.add("_links", src.getLinks());
+            return result;
+        }
+    }
+
+    public static class ControlDeserializer implements JsonDeserializer<Control> {
+        @Override public Control deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            if (jsonObject.get("controlName") == null)
+                throw new ApiErrorBadRequest(400, String.format("%s (%s)", ControlController.EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
+            Long id = jsonObject.get("controlId").getAsLong();
+            String name = jsonObject.get("controlName").getAsString();
+            return new Control(id, name);
+        }
+    }
+
+    public static class ListControlDeserializer implements JsonDeserializer<List<Control>> {
+        @Override public List<Control> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonArray array = json.getAsJsonArray();
+            List<Control> result = new ArrayList<>();
+            for (JsonElement e : array) {
+                JsonObject jsonObject = e.getAsJsonObject();
+                if (jsonObject.get("controlName") == null)
+                    throw new ApiErrorBadRequest(400, String.format("%s (%s)", ControlController.EXPECTED_REQUEST_FORMAT,
+                        Thread.currentThread().getStackTrace()[1].toString()));
+                Long id = jsonObject.get("controlId").getAsLong();
+                String name = jsonObject.get("controlName").getAsString();
+                result.add(new Control(id, name));
+            }
             return result;
         }
     }
@@ -192,7 +228,6 @@ public class Control {
                 control.getName() == null && (getValue() != null ?
                     getValue().equals(control.getValue()) :
                     control.getValue() == null));
-
     }
 
     @Override public int hashCode() {

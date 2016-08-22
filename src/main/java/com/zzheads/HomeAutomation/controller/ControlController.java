@@ -24,8 +24,8 @@ public class ControlController {
     @Autowired EquipmentService equipmentService;
     @Autowired ControlService controlService;
 
-    private static final String expectedRequestFormat = "Can't make that request. Expected data format: {\"controlName\" : controlName}";
-    private static final String expectedRequestFormatValue = "Can't make that request. Expected data format: {\"value\"}";
+    public static final String EXPECTED_REQUEST_FORMAT = "Can't make that request. Expected data format: {\"controlName\" : controlName}";
+    private static final String EXPECTED_REQUEST_FORMAT_VALUE = "Can't make that request. Expected data format: {\"value\"}";
     private boolean requestOk (Map request) {
         return request.containsKey("controlName");
     }
@@ -37,7 +37,7 @@ public class ControlController {
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}/control", method = RequestMethod.POST, produces = {"application/json"})
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody String addControl(@RequestBody Map<String, String> req, @PathVariable Long roomId, @PathVariable Long equipmentId) throws DaoException {
-        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", expectedRequestFormat, Thread.currentThread().getStackTrace()[1].toString()));
+        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Equipment equipment = equipmentService.findById(equipmentId);
         if (equipment == null) throw new ApiErrorNotFound(404, String.format("Can't find equipment with %d id. (%s)", equipmentId, Thread.currentThread().getStackTrace()[1].toString()));
         Control control = new Control(req);
@@ -54,9 +54,9 @@ public class ControlController {
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}/control/{controlId}", method = RequestMethod.PUT, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.OK)
+    @ResponseStatus (HttpStatus.CREATED)
     public @ResponseBody String updateControl(@RequestBody Map<String, String> req, @PathVariable Long roomId, @PathVariable Long equipmentId, @PathVariable Long controlId) throws DaoException {
-        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", expectedRequestFormat, Thread.currentThread().getStackTrace()[1].toString()));
+        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Equipment equipment = equipmentService.findById(equipmentId);
         if (equipment == null) throw new ApiErrorNotFound(404, String.format("Can't find equipment with %d id. (%s)", equipmentId, Thread.currentThread().getStackTrace()[1].toString()));
         Control controlOld = controlService.findById(controlId);
@@ -80,7 +80,7 @@ public class ControlController {
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}/control/{controlId}", method = RequestMethod.DELETE, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.OK)
+    @ResponseStatus (HttpStatus.NO_CONTENT)
     public void deleteControlById(@PathVariable Long roomId, @PathVariable Long equipmentId, @PathVariable Long controlId) throws DaoException {
         Equipment equipment = equipmentService.findById(equipmentId);
         if (equipment == null) throw new ApiErrorNotFound(404, String.format("Can't find equipment with %d id. (%s)", equipmentId, Thread.currentThread().getStackTrace()[1].toString()));
@@ -92,9 +92,9 @@ public class ControlController {
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}/control/{controlId}/value", method = RequestMethod.POST, produces = {"application/json"})
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody String setValue(@RequestBody String req, @PathVariable Long roomId, @PathVariable Long equipmentId, @PathVariable Long controlId) throws DaoException {
-        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", expectedRequestFormatValue, Thread.currentThread().getStackTrace()[1].toString()));
+        if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT_VALUE, Thread.currentThread().getStackTrace()[1].toString()));
         Control control = controlService.findById(controlId);
         if (control == null) throw new ApiErrorNotFound(404, String.format("Can't find control with %d id. (%s)", controlId, Thread.currentThread().getStackTrace()[1].toString()));
         control.setValue(req);
