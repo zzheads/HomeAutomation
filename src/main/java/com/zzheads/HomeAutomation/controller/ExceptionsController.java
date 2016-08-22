@@ -42,7 +42,6 @@ public class ExceptionsController {
     private class ApiErrorSerializer implements JsonSerializer<ApiError> {
         @Override
         public JsonElement serialize(ApiError src, Type typeOfSrc, JsonSerializationContext context) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(String.class, new EscapeStringSerializer()).create();
             JsonObject result = new JsonObject();
             Date date = new Date();
             result.addProperty("timestamp", String.valueOf(new Timestamp(date.getTime())));
@@ -56,23 +55,6 @@ public class ExceptionsController {
             result.addProperty("message", src.getMessage());
             result.addProperty("path", src.getPath());
             return result;
-        }
-    }
-
-    private static class EscapeStringSerializer implements JsonSerializer<String> {
-        @Override
-        public JsonElement serialize(String s, Type type, JsonSerializationContext jsonSerializationContext) {
-            return new JsonPrimitive(escapeJS(s));
-        }
-
-        public static String escapeJS(String string) {
-            String escapes[][] = new String[][]{
-                {"\"", "|"}
-            };
-            for (String[] esc : escapes) {
-                string = string.replace(esc[0], esc[1]);
-            }
-            return string;
         }
     }
 }
