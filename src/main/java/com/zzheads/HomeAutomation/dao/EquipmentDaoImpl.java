@@ -1,5 +1,6 @@
 package com.zzheads.HomeAutomation.dao;//
 
+import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import com.zzheads.HomeAutomation.model.Equipment;
 import com.zzheads.HomeAutomation.model.Room;
@@ -18,28 +19,24 @@ import java.util.stream.Collectors;
 public class EquipmentDaoImpl extends CrudDaoImpl implements EquipmentDao {
 
     @SuppressWarnings("unchecked")
-    @Override public List<Equipment> findAll() {
+    @Override public List<Equipment> findAll() throws DaoException {
         return super.findAll(Equipment.class);
     }
 
-    @Override public List<Equipment> findByRoom(Long roomId) {
+    @Override public List<Equipment> findByRoom(Long roomId) throws DaoException {
         return findAll().stream().filter(e -> Objects.equals(e.getRoom().getId(), roomId)).collect(Collectors.toList());
     }
 
-    @Override public Equipment findById(Long id) {
+    @Override public Equipment findById(Long id) throws DaoException {
         return (Equipment) super.findById(Equipment.class, id);
     }
 
-    @Override public Equipment findByName(String name) {
-        return (Equipment) super.findByName(Equipment.class, name);
-    }
-
-    @Override public Long save(Equipment equipment) {
+    @Override public Long save(Equipment equipment) throws DaoException {
         super.save(equipment);
         return equipment.getId();
     }
 
-    @Override public void delete(Equipment equipment) {
+    @Override public void delete(Equipment equipment) throws DaoException {
         super.delete(equipment);
     }
 }

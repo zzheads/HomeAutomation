@@ -30,6 +30,9 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableAutoConfiguration
 @ComponentScan
 public class Application {
+
+    public static final String BASE_URL ="http://localhost:8080/";
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }

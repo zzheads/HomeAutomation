@@ -1,10 +1,13 @@
 package com.zzheads.HomeAutomation.model;//
 
+import com.google.gson.*;
+import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.controller.RoomController;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.lang.reflect.Type;
 import java.util.*;
 
 // HomeAutomation
@@ -68,48 +71,6 @@ public class Equipment {
         this.room = room;
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Map> getLinks() {
-        List<Map> links = new ArrayList<>();
-        final String parentString = RoomController.BASE_URL+"room/"+room.getId()+"/equipment";
-        final String selfString = parentString + "/"+id;
-        final String controlString = selfString + "/control";
-
-        links.add(new HashMap<>());
-        links.get(0).put("rel", "self");
-        links.get(0).put("href", selfString);
-        links.add(new HashMap<>());
-        links.get(1).put("rel", "parent");
-        links.get(1).put("href", parentString);
-        links.add(new HashMap<>());
-        links.get(2).put("rel", "control");
-        links.get(2).put("href", controlString);
-
-        return links;
-    }
-
-    public Map Json() {
-        Map <String, Object> res = new HashMap<>();
-        res.put("equipmentId", String.valueOf(id));
-        res.put("equipmentName", name);
-        res.put("_links", getLinks());
-
-        return res;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static List Json(List<Equipment> equipments) {
-        List<Map> res = new ArrayList<>();
-
-        for (int i=0; i<equipments.size(); i++) {
-            res.add(new HashMap<>());
-            res.get(i).put("equipmentId", String.valueOf(equipments.get(i).getId()));
-            res.get(i).put("equipmentName", equipments.get(i).getName());
-            res.get(i).put("_links", equipments.get(i).getLinks());
-        }
-        return res;
-    }
-
     public void addControl(Control control) {
         controls.add(control);
     }
@@ -118,6 +79,40 @@ public class Equipment {
         for (int i=0;i<controls.size();i++) {
             if (Objects.equals(controls.get(i).getId(), control.getId())) controls.remove(i);
         }
+    }
+
+    private static class EquipmentSerializer implements JsonSerializer<Equipment> {
+        @Override
+        public JsonElement serialize(Equipment src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject linkSelf = new JsonObject();
+            linkSelf.addProperty("rel", "self");
+            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getRoom().getId() + "/equipment/" + src.getId());
+            JsonObject linkParent = new JsonObject();
+            linkParent.addProperty("rel", "parent");
+            linkParent.addProperty("href", Application.BASE_URL + "room/" + src.getRoom().getId());
+            JsonObject linkControl = new JsonObject();
+            linkControl.addProperty("rel", "control");
+            linkControl.addProperty("href", Application.BASE_URL + "room/" + src.getId() + "/equipment/" + src.getId() + "/control");
+            JsonObject result = new JsonObject();
+            result.addProperty("equipmentId", String.valueOf(src.getId()));
+            result.addProperty("equipmentName", src.getName());
+            JsonArray links = new JsonArray();
+            links.add(linkSelf);
+            links.add(linkParent);
+            links.add(linkControl);
+            result.add("_links", links);
+            return result;
+        }
+    }
+
+    public String toJson() {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new EquipmentSerializer()).setPrettyPrinting().create();
+        return gson.toJson(this);
+    }
+
+    public static String toJson(List<Equipment> equipments) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new EquipmentSerializer()).setPrettyPrinting().create();
+        return gson.toJson(equipments);
     }
 
 }

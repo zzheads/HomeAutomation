@@ -1,5 +1,6 @@
 package com.zzheads.HomeAutomation.dao;//
 
+import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import com.zzheads.HomeAutomation.model.Room;
 import org.springframework.stereotype.Repository;
@@ -14,28 +15,24 @@ import java.util.stream.Collectors;
 @Repository
 public class ControlDaoImpl extends CrudDaoImpl implements ControlDao {
     @SuppressWarnings("unchecked")
-    @Override public List<Control> findAll() {
+    @Override public List<Control> findAll() throws DaoException {
         return super.findAll(Control.class);
     }
 
-    @Override public List<Control> findByEquipment(Long equipmentId) {
+    @Override public List<Control> findByEquipment(Long equipmentId) throws DaoException {
         return findAll().stream().filter(c -> Objects.equals(c.getEquipment().getId(), equipmentId)).collect(Collectors.toList());
     }
 
-    @Override public Control findById(Long id) {
+    @Override public Control findById(Long id) throws DaoException {
         return (Control) super.findById(Control.class, id);
     }
 
-    @Override public Control findByName(String name) {
-        return (Control) super.findByName(Control.class, name);
-    }
-
-    @Override public Long save(Control control) {
+    @Override public Long save(Control control) throws DaoException {
         super.save(control);
         return control.getId();
     }
 
-    @Override public void delete(Control control) {
+    @Override public void delete(Control control) throws DaoException {
         super.delete(control);
     }
 

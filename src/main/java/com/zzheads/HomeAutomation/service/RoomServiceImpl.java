@@ -1,6 +1,7 @@
 package com.zzheads.HomeAutomation.service;//
 
 import com.zzheads.HomeAutomation.dao.RoomDao;
+import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,23 +17,19 @@ public class RoomServiceImpl implements RoomService {
     @Autowired
     private RoomDao roomDao;
 
-    @Override public List<Room> findAll() {
+    @Override public List<Room> findAll() throws DaoException {
         return roomDao.findAll();
     }
 
-    @Override public Room findById(Long id) {
+    @Override public Room findById(Long id) throws DaoException {
         return roomDao.findById(id);
     }
 
-    @Override public Room findByName(String name) {
-        return roomDao.findByName(name);
-    }
-
-    @Override public Long save(Room room) {
+    @Override public Long save(Room room) throws DaoException {
         return roomDao.save(room);
     }
 
-    @Override public void delete(Room room) {
+    @Override public void delete(Room room) throws DaoException {
         roomDao.delete(room);
     }
 }

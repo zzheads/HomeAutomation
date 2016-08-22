@@ -1,9 +1,12 @@
 package com.zzheads.HomeAutomation.model;//
 
+import com.google.gson.*;
+import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.controller.RoomController;
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 import javax.persistence.*;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -63,12 +66,16 @@ public class Control {
     }
 
     public void setValue(String string) {
+        double d = Double.parseDouble(formattedString(string));
+        this.value = BigDecimal.valueOf(d);
+    }
+
+    public static String formattedString (String req) {
         String result="";
-        for (char c : string.toCharArray()) {
+        for (char c : req.toCharArray()) {
             if (Character.isDigit(c) || c=='.' || c==',') result+=c;
         }
-        double d = Double.parseDouble(result);
-        this.value = BigDecimal.valueOf(d);
+        return result;
     }
 
     public Equipment getEquipment() {
@@ -79,54 +86,67 @@ public class Control {
         this.equipment = equipment;
     }
 
-    // True - links for control, false - for value
-    @SuppressWarnings("unchecked")
-    private List<Map> getLinks(boolean linksForControlOrValue) {
-        List<Map> links = new ArrayList<>();
-        final String parentString = RoomController.BASE_URL+"room/"+equipment.getRoom().getId()+"/equipment";
-        final String selfString = parentString + "/"+equipment.getId()+"/control/"+id;
-        final String valueString = selfString + "/value";
-
-        links.add(new HashMap<>());
-        links.get(0).put("rel", "self");
-        links.get(0).put("href", selfString);
-        links.add(new HashMap<>());
-        links.get(1).put("rel", "parent");
-        links.get(1).put("href", parentString);
-        if (linksForControlOrValue) {
-            links.add(new HashMap<>());
-            links.get(2).put("rel", "value");
-            links.get(2).put("href", valueString);
+    private static class ControlSerializer implements JsonSerializer<Control> {
+        @Override
+        public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject linkSelf = new JsonObject();
+            linkSelf.addProperty("rel", "self");
+            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId());
+            JsonObject linkParent = new JsonObject();
+            linkParent.addProperty("rel", "parent");
+            linkParent.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId());
+            JsonObject linkValue = new JsonObject();
+            linkValue.addProperty("rel", "value");
+            linkValue.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId() + "/value");
+            JsonObject result = new JsonObject();
+            result.addProperty("controlId", String.valueOf(src.getId()));
+            result.addProperty("controlName", src.getName());
+            JsonArray links = new JsonArray();
+            links.add(linkSelf);
+            links.add(linkParent);
+            links.add(linkValue);
+            result.add("_links", links);
+            return result;
         }
-        return links;
     }
 
-    public Map Json() {
-        Map <String, Object> res = new HashMap<>();
-        res.put("controlId", String.valueOf(id));
-        res.put("controlName", name);
-        res.put("_links", getLinks(true));
-        return res;
+    public String toJson() {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlSerializer()).setPrettyPrinting().create();
+        return gson.toJson(this);
     }
 
-    public Map jsonValue() {
-        Map <String, Object> res = new HashMap<>();
-        res.put("value", value.toString());
-        res.put("_links", getLinks(false));
-        return res;
+    public static String toJson(List<Control> equipments) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlSerializer()).setPrettyPrinting().create();
+        return gson.toJson(equipments);
     }
 
-    @SuppressWarnings("unchecked")
-    public static List Json(List<Control> controls) {
-        List<Map> res = new ArrayList<>();
-
-        for (int i=0; i<controls.size(); i++) {
-            res.add(new HashMap<>());
-            res.get(i).put("controlId", String.valueOf(controls.get(i).getId()));
-            res.get(i).put("controlName", controls.get(i).getName());
-            res.get(i).put("_links", controls.get(i).getLinks(true));
+    private static class ControlValueSerializer implements JsonSerializer<Control> {
+        @Override
+        public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject linkSelf = new JsonObject();
+            linkSelf.addProperty("rel", "self");
+            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId() + "/value");
+            JsonObject linkParent = new JsonObject();
+            linkParent.addProperty("rel", "parent");
+            linkParent.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId());
+            JsonObject result = new JsonObject();
+            result.addProperty("value", String.valueOf(src.getValue().doubleValue()));
+            JsonArray links = new JsonArray();
+            links.add(linkSelf);
+            links.add(linkParent);
+            result.add("_links", links);
+            return result;
         }
-        return res;
+    }
+
+    public String toJsonValue() {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
+        return gson.toJson(this);
+    }
+
+    public static String toJsonValue(List<Control> equipments) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
+        return gson.toJson(equipments);
     }
 
 

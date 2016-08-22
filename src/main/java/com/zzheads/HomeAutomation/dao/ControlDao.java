@@ -1,5 +1,6 @@
 package com.zzheads.HomeAutomation.dao;//
 
+import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import com.zzheads.HomeAutomation.model.Equipment;
 import com.zzheads.HomeAutomation.model.Room;
@@ -10,10 +11,9 @@ import java.util.List;
 // com.zzheads.HomeAutomation.dao created by zzheads on 20.08.2016.
 //
 public interface ControlDao {
-    List<Control> findAll();
-    List<Control> findByEquipment(Long equipmentId);
-    Control findById(Long id);
-    Control findByName(String name);
-    Long save(Control control);
-    void delete(Control control);
+    List<Control> findAll() throws DaoException;
+    List<Control> findByEquipment(Long equipmentId) throws DaoException;
+    Control findById(Long id) throws DaoException;
+    Long save(Control control) throws DaoException;
+    void delete(Control control) throws DaoException;
 }

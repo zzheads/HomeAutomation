@@ -1,10 +1,14 @@
 package com.zzheads.HomeAutomation.model;//
 
+import com.google.gson.*;
+import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.controller.RoomController;
+import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.lang.reflect.Type;
 import java.util.*;
 
 // HomeAutomation
@@ -17,6 +21,7 @@ public class Room {
     private Long id;
     private String name;
     private int squareFootage;
+
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Equipment> equipments = new ArrayList<>();
@@ -24,7 +29,12 @@ public class Room {
     public Room() {
     }
 
-    // JSON constructor
+    public Room (JsonObject jsonObject) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomDeserializer()).create();
+        name = gson.fromJson(jsonObject, Room.class).getName();
+        squareFootage = gson.fromJson(jsonObject, Room.class).getSquareFootage();
+    }
+
     public Room(Map<String, String> map) {
         name = map.get("roomName");
         squareFootage = Integer.parseInt(map.get("squareFootage"));
@@ -83,43 +93,53 @@ public class Room {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Map> getLinks(){
-        List<Map> links = new ArrayList<>();
-        final String selfString = RoomController.BASE_URL + "room/" + id;
-        final String equipmentString = selfString + "/equipment";
-
-        links.add(new HashMap<>());
-        links.get(0).put("rel", "self");
-        links.get(0).put("href", selfString);
-        links.add(new HashMap<>());
-        links.get(1).put("rel", "equipment");
-        links.get(1).put("href", equipmentString);
-
-        return links;
-    }
-
-    public Map Json() {
-        Map <String, Object> res = new HashMap<>();
-        res.put("roomId", String.valueOf(id));
-        res.put("roomName", name);
-        res.put("squareFootage", String.valueOf(squareFootage));
-        res.put("_links", getLinks());
-
-        return res;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static List Json(List<Room> rooms) {
-        List<Map> res = new ArrayList<>();
-
-        for (int i=0; i<rooms.size(); i++) {
-            res.add(new HashMap<>());
-            res.get(i).put("roomId", String.valueOf(rooms.get(i).getId()));
-            res.get(i).put("roomName", rooms.get(i).getName());
-            res.get(i).put("squareFootage", String.valueOf(rooms.get(i).getSquareFootage()));
-            res.get(i).put("_links", rooms.get(i).getLinks());
+    private static class RoomSerializer implements JsonSerializer<Room> {
+        @Override
+        public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject linkSelf = new JsonObject();
+            linkSelf.addProperty("rel", "self");
+            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getId());
+            JsonObject linkEquipment = new JsonObject();
+            linkEquipment.addProperty("rel", "equipment");
+            linkEquipment.addProperty("href", Application.BASE_URL + "room/" + src.getId() + "/equipment");
+            JsonObject result = new JsonObject();
+            result.addProperty("roomId", String.valueOf(src.getId()));
+            result.addProperty("roomName", src.getName());
+            result.addProperty("squareFootage", String.valueOf(src.getSquareFootage()));
+            JsonArray links = new JsonArray();
+            links.add(linkSelf);
+            links.add(linkEquipment);
+            result.add("_links", links);
+            return result;
         }
-        return res;
     }
+
+    public String toJson() {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomSerializer()).setPrettyPrinting().create();
+        return gson.toJson(this);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String toJson(List<Room> rooms) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomSerializer()).setPrettyPrinting().create();
+        return gson.toJson(rooms);
+    }
+
+    private static class RoomDeserializer implements JsonDeserializer<Room> {
+        @Override
+        public Room deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            if (jsonObject.get("roomName") == null || jsonObject.get("squareFootage") == null)
+                throw new ApiErrorBadRequest(400, String.format("%s (%s)", RoomController.EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
+            String name = jsonObject.get("roomName").getAsString();
+            int squareFootage = jsonObject.get("squareFootage").getAsInt();
+            return new Room(name, squareFootage);
+        }
+    }
+
+    public static Room fromJson(JsonObject jsonObject) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomDeserializer()).create();
+        return gson.fromJson(jsonObject, Room.class);
+    }
+
 }

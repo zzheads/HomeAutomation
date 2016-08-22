@@ -1,6 +1,7 @@
 package com.zzheads.HomeAutomation.service;//
 
 import com.zzheads.HomeAutomation.dao.ControlDao;
+import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,27 +16,23 @@ public class ControlServiceImpl implements ControlService {
     @Autowired
     private ControlDao controlDao;
 
-    @Override public List<Control> findAll() {
+    @Override public List<Control> findAll() throws DaoException {
         return controlDao.findAll();
     }
 
-    @Override public List<Control> findByEquipment(Long equipmentId) {
+    @Override public List<Control> findByEquipment(Long equipmentId) throws DaoException {
         return controlDao.findByEquipment(equipmentId);
     }
 
-    @Override public Control findById(Long id) {
+    @Override public Control findById(Long id) throws DaoException {
         return controlDao.findById(id);
     }
 
-    @Override public Control findByName(String name) {
-        return controlDao.findByName(name);
-    }
-
-    @Override public Long save(Control control) {
+    @Override public Long save(Control control) throws DaoException {
         return controlDao.save(control);
     }
 
-    @Override public void delete(Control control) {
+    @Override public void delete(Control control) throws DaoException {
         controlDao.delete(control);
     }
 }

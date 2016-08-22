@@ -1,5 +1,6 @@
 package com.zzheads.HomeAutomation.dao;//
 
+import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import com.zzheads.HomeAutomation.model.Equipment;
 import com.zzheads.HomeAutomation.model.Room;
@@ -14,24 +15,20 @@ import java.util.List;
 @Repository
 public class RoomDaoImpl extends CrudDaoImpl implements RoomDao {
     @SuppressWarnings("unchecked")
-    @Override public List<Room> findAll() {
+    @Override public List<Room> findAll() throws DaoException {
         return super.findAll(Room.class);
     }
 
-    @Override public Room findById(Long id) {
+    @Override public Room findById(Long id) throws DaoException {
         return (Room) super.findById(Room.class, id);
     }
 
-    @Override public Room findByName(String name) {
-        return (Room) super.findByName(Room.class, name);
-    }
-
-    @Override public Long save(Room room) {
+    @Override public Long save(Room room) throws DaoException {
         super.save(room);
         return room.getId();
     }
 
-    @Override public void delete(Room room) {
+    @Override public void delete(Room room) throws DaoException {
         super.delete(room);
     }
 }
