@@ -81,28 +81,21 @@ public class Equipment {
         }
     }
 
-    private static class EquipmentSerializer implements JsonSerializer<Equipment> {
-        @Override
-        public JsonElement serialize(Equipment src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject linkSelf = new JsonObject();
-            linkSelf.addProperty("rel", "self");
-            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getRoom().getId() + "/equipment/" + src.getId());
-            JsonObject linkParent = new JsonObject();
-            linkParent.addProperty("rel", "parent");
-            linkParent.addProperty("href", Application.BASE_URL + "room/" + src.getRoom().getId());
-            JsonObject linkControl = new JsonObject();
-            linkControl.addProperty("rel", "control");
-            linkControl.addProperty("href", Application.BASE_URL + "room/" + src.getId() + "/equipment/" + src.getId() + "/control");
-            JsonObject result = new JsonObject();
-            result.addProperty("equipmentId", String.valueOf(src.getId()));
-            result.addProperty("equipmentName", src.getName());
-            JsonArray links = new JsonArray();
-            links.add(linkSelf);
-            links.add(linkParent);
-            links.add(linkControl);
-            result.add("_links", links);
-            return result;
-        }
+    public JsonArray getLinks() {
+        JsonObject linkSelf = new JsonObject();
+        linkSelf.addProperty("rel", "self");
+        linkSelf.addProperty("href", Application.BASE_URL + "room/" + getRoom().getId() + "/equipment/" + getId());
+        JsonObject linkParent = new JsonObject();
+        linkParent.addProperty("rel", "parent");
+        linkParent.addProperty("href", Application.BASE_URL + "room/" + getRoom().getId());
+        JsonObject linkControl = new JsonObject();
+        linkControl.addProperty("rel", "control");
+        linkControl.addProperty("href", Application.BASE_URL + "room/" + getId() + "/equipment/" + getId() + "/control");
+        JsonArray links = new JsonArray();
+        links.add(linkSelf);
+        links.add(linkParent);
+        links.add(linkControl);
+        return links;
     }
 
     public String toJson() {
@@ -110,9 +103,36 @@ public class Equipment {
         return gson.toJson(this);
     }
 
+    private static class EquipmentSerializer implements JsonSerializer<Equipment> {
+        @Override
+        public JsonElement serialize(Equipment src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject result = new JsonObject();
+            result.addProperty("equipmentId", String.valueOf(src.getId()));
+            result.addProperty("equipmentName", src.getName());
+            result.add("_links", src.getLinks());
+            return result;
+        }
+    }
+
+    public static class EquipmentTreeSerializer implements JsonSerializer<Equipment> {
+        @Override
+        public JsonElement serialize(Equipment src, Type typeOfSrc, JsonSerializationContext context) {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new Control.ControlTreeSerializer()).create();
+            JsonObject result = new JsonObject();
+            result.addProperty("equipmentId", String.valueOf(src.getId()));
+            result.addProperty("equipmentName", src.getName());
+            if (src.getControls() != null && src.getControls().size() > 0) {
+                JsonArray controls = new JsonArray();
+                for (Control c : src.getControls())
+                    controls.add(gson.toJsonTree(c));
+                result.add("controls", controls);
+            }
+            return result;
+        }
+    }
+
     public static String toJson(List<Equipment> equipments) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new EquipmentSerializer()).setPrettyPrinting().create();
         return gson.toJson(equipments);
     }
-
 }

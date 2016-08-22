@@ -12,7 +12,7 @@ package com.zzheads.HomeAutomation;
 // DONE:     Using the API documentation, create model classes that represent the API resources and add JPA annotations.
 // DONE:     Create a Spring Data DAO interface for each model class.
 // DONE:     Create a service interface and implementation for each model class.
-// TODO:     Create controllers for all endpoints in documentation, using appropriate annotations.
+// DONE:     Create controllers for all endpoints in documentation, using appropriate annotations.
 // TODO:     Write unit tests for all controllers, services, and DAOs.
 //
 //
@@ -20,7 +20,7 @@ package com.zzheads.HomeAutomation;
 //
 // TODO:     Use a third party mocking library, such as Mockito, for unit testing.
 // TODO:     Use @ExceptionHandler annotations and @ResponseStatus annotations for exception handling.
-// TODO:     Create a custom endpoint for retrieving all rooms, equipment, controls, and values.
+// DONE:     Create a custom endpoint for retrieving all rooms, equipment, controls, and values.
 
 
 import org.springframework.boot.SpringApplication;

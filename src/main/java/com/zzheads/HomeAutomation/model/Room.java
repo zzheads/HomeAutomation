@@ -9,6 +9,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.*;
 
 // HomeAutomation
@@ -93,25 +94,17 @@ public class Room {
         }
     }
 
-    private static class RoomSerializer implements JsonSerializer<Room> {
-        @Override
-        public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject linkSelf = new JsonObject();
-            linkSelf.addProperty("rel", "self");
-            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getId());
-            JsonObject linkEquipment = new JsonObject();
-            linkEquipment.addProperty("rel", "equipment");
-            linkEquipment.addProperty("href", Application.BASE_URL + "room/" + src.getId() + "/equipment");
-            JsonObject result = new JsonObject();
-            result.addProperty("roomId", String.valueOf(src.getId()));
-            result.addProperty("roomName", src.getName());
-            result.addProperty("squareFootage", String.valueOf(src.getSquareFootage()));
-            JsonArray links = new JsonArray();
-            links.add(linkSelf);
-            links.add(linkEquipment);
-            result.add("_links", links);
-            return result;
-        }
+    public JsonArray getLinks() {
+        JsonObject linkSelf = new JsonObject();
+        linkSelf.addProperty("rel", "self");
+        linkSelf.addProperty("href", Application.BASE_URL + "room/" + getId());
+        JsonObject linkEquipment = new JsonObject();
+        linkEquipment.addProperty("rel", "equipment");
+        linkEquipment.addProperty("href", Application.BASE_URL + "room/" + getId() + "/equipment");
+        JsonArray links = new JsonArray();
+        links.add(linkSelf);
+        links.add(linkEquipment);
+        return links;
     }
 
     public String toJson() {
@@ -119,10 +112,16 @@ public class Room {
         return gson.toJson(this);
     }
 
-    @SuppressWarnings("unchecked")
-    public static String toJson(List<Room> rooms) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomSerializer()).setPrettyPrinting().create();
-        return gson.toJson(rooms);
+    private static class RoomSerializer implements JsonSerializer<Room> {
+        @Override
+        public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject result = new JsonObject();
+            result.addProperty("roomId", String.valueOf(src.getId()));
+            result.addProperty("roomName", src.getName());
+            result.addProperty("squareFootage", String.valueOf(src.getSquareFootage()));
+            result.add("_links", src.getLinks());
+            return result;
+        }
     }
 
     private static class RoomDeserializer implements JsonDeserializer<Room> {
@@ -137,9 +136,36 @@ public class Room {
         }
     }
 
+    private static class RoomTreeSerializer implements JsonSerializer<Room> {
+        @Override
+        public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {
+            Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new Equipment.EquipmentTreeSerializer()).create();
+            JsonObject tree = new JsonObject();
+            tree.addProperty("roomId", String.valueOf(src.getId()));
+            tree.addProperty("roomName", src.getName());
+            tree.addProperty("squareFootage", String.valueOf(src.getSquareFootage()));
+            if (src.getEquipments() != null && src.getEquipments().size() > 0) {
+                JsonArray equipments = new JsonArray();
+                for (Equipment e : src.getEquipments())
+                    equipments.add(gson.toJsonTree(e));
+                tree.add("equipments", equipments);
+            }
+            return tree;
+        }
+    }
+
     public static Room fromJson(JsonObject jsonObject) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomDeserializer()).create();
         return gson.fromJson(jsonObject, Room.class);
     }
 
+    public static String toJson(List<Room> rooms) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomSerializer()).setPrettyPrinting().create();
+        return gson.toJson(rooms);
+    }
+
+    public static String toJsonTree(List<Room> rooms) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomTreeSerializer()).setPrettyPrinting().create();
+        return gson.toJson(rooms);
+    }
 }

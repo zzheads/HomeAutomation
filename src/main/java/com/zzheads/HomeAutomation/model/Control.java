@@ -86,28 +86,38 @@ public class Control {
         this.equipment = equipment;
     }
 
-    private static class ControlSerializer implements JsonSerializer<Control> {
-        @Override
-        public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject linkSelf = new JsonObject();
-            linkSelf.addProperty("rel", "self");
-            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId());
-            JsonObject linkParent = new JsonObject();
-            linkParent.addProperty("rel", "parent");
-            linkParent.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId());
-            JsonObject linkValue = new JsonObject();
-            linkValue.addProperty("rel", "value");
-            linkValue.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId() + "/value");
-            JsonObject result = new JsonObject();
-            result.addProperty("controlId", String.valueOf(src.getId()));
-            result.addProperty("controlName", src.getName());
-            JsonArray links = new JsonArray();
-            links.add(linkSelf);
-            links.add(linkParent);
-            links.add(linkValue);
-            result.add("_links", links);
-            return result;
-        }
+    private String getParentLink() {
+        return Application.BASE_URL + "room/" + getEquipment().getRoom().getId() + "/equipment/" + getEquipment().getId();
+    }
+
+    public JsonArray getLinks() {
+        JsonObject linkSelf = new JsonObject();
+        linkSelf.addProperty("rel", "self");
+        linkSelf.addProperty("href", getParentLink() + "/control/" + getId());
+        JsonObject linkParent = new JsonObject();
+        linkParent.addProperty("rel", "parent");
+        linkParent.addProperty("href", getParentLink());
+        JsonObject linkValue = new JsonObject();
+        linkValue.addProperty("rel", "value");
+        linkValue.addProperty("href", getParentLink() + "/control/" + getId() + "/value");
+        JsonArray links = new JsonArray();
+        links.add(linkSelf);
+        links.add(linkParent);
+        links.add(linkValue);
+        return links;
+    }
+
+    public JsonArray getValueLinks() {
+        JsonObject linkSelf = new JsonObject();
+        linkSelf.addProperty("rel", "self");
+        linkSelf.addProperty("href", getParentLink() + "/control/" + getId() + "/value");
+        JsonObject linkParent = new JsonObject();
+        linkParent.addProperty("rel", "parent");
+        linkParent.addProperty("href", getParentLink() + "/control/" + getId());
+        JsonArray links = new JsonArray();
+        links.add(linkSelf);
+        links.add(linkParent);
+        return links;
     }
 
     public String toJson() {
@@ -115,39 +125,51 @@ public class Control {
         return gson.toJson(this);
     }
 
-    public static String toJson(List<Control> equipments) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlSerializer()).setPrettyPrinting().create();
-        return gson.toJson(equipments);
+    public String toJsonValue() {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
+        return gson.toJson(this);
+    }
+
+    private static class ControlSerializer implements JsonSerializer<Control> {
+        @Override
+        public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject result = new JsonObject();
+            result.addProperty("controlId", String.valueOf(src.getId()));
+            result.addProperty("controlName", src.getName());
+            result.add("_links", src.getLinks());
+            return result;
+        }
     }
 
     private static class ControlValueSerializer implements JsonSerializer<Control> {
         @Override
         public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject linkSelf = new JsonObject();
-            linkSelf.addProperty("rel", "self");
-            linkSelf.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId() + "/value");
-            JsonObject linkParent = new JsonObject();
-            linkParent.addProperty("rel", "parent");
-            linkParent.addProperty("href", Application.BASE_URL + "room/" + src.getEquipment().getRoom().getId() + "/equipment/" + src.getEquipment().getId() + "/control/" + src.getId());
             JsonObject result = new JsonObject();
             result.addProperty("value", String.valueOf(src.getValue().doubleValue()));
-            JsonArray links = new JsonArray();
-            links.add(linkSelf);
-            links.add(linkParent);
-            result.add("_links", links);
+            result.add("_links", src.getValueLinks());
             return result;
         }
     }
 
-    public String toJsonValue() {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
-        return gson.toJson(this);
+    public static class ControlTreeSerializer implements JsonSerializer<Control> {
+        @Override
+        public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject result = new JsonObject();
+            result.addProperty("controlId", String.valueOf(src.getId()));
+            result.addProperty("controlName", src.getName());
+            if (src.getValue() != null)
+                result.addProperty("value", String.valueOf(src.getValue().doubleValue()));
+            return result;
+        }
+    }
+
+    public static String toJson(List<Control> equipments) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlSerializer()).setPrettyPrinting().create();
+        return gson.toJson(equipments);
     }
 
     public static String toJsonValue(List<Control> equipments) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
         return gson.toJson(equipments);
     }
-
-
 }

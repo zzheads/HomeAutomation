@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorNotFound;
 import com.zzheads.HomeAutomation.exceptions.DaoException;
+import com.zzheads.HomeAutomation.model.Control;
+import com.zzheads.HomeAutomation.model.Equipment;
 import com.zzheads.HomeAutomation.model.Room;
 import com.zzheads.HomeAutomation.service.ControlService;
 import com.zzheads.HomeAutomation.service.EquipmentService;
@@ -45,7 +47,6 @@ public class RoomController {
     @RequestMapping(value = "/room", method = RequestMethod.GET, produces = {"application/json"})
     @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String getAllRooms() throws DaoException {
-        Gson gson = new Gson();
         List<Room> rooms = roomService.findAll();
         return Room.toJson(rooms);
     }
@@ -74,5 +75,12 @@ public class RoomController {
         Room room = roomService.findById(id);
         if (room == null) throw new ApiErrorNotFound(404, String.format("Can't find room with %d id. (%s)", id, Thread.currentThread().getStackTrace()[1].toString()));
         roomService.delete(room);
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET, produces = {"application/json"})
+    @ResponseStatus (HttpStatus.OK)
+    public @ResponseBody String getAll() throws DaoException {
+        List<Room> rooms = roomService.findAll();
+        return Room.toJsonTree(rooms);
     }
 }
