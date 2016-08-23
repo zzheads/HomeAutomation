@@ -161,7 +161,6 @@ public class Room {
         }
     }
 
-
     public static class RoomTreeSerializer implements JsonSerializer<Room> {
         @Override
         public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {

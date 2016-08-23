@@ -13,7 +13,7 @@ package com.zzheads.HomeAutomation;
 // DONE:     Create a Spring Data DAO interface for each model class.
 // DONE:     Create a service interface and implementation for each model class.
 // DONE:     Create controllers for all endpoints in documentation, using appropriate annotations.
-// TODO:     Write unit tests for all controllers, services, and DAOs.
+// DONE:     Write unit tests for all controllers, services, and DAOs.
 //
 //
 //      Extra Credit
@@ -33,23 +33,12 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableAutoConfiguration
 @ComponentScan
 public class Application {
-
     public static final String BASE_URL ="http://localhost:8080/";
-    private static ConfigurableApplicationContext appContext;
-
     static {
         System.setProperty("properties.home", "E:/Projects/HomeAutomation/properties/");
     }
 
     public static void main(String[] args) {
-        appContext = SpringApplication.run(Application.class, args);
-    }
-
-    public static ConfigurableApplicationContext getAppContext() {
-        return appContext;
-    }
-
-    public static void setAppContext(ConfigurableApplicationContext appContext) {
-        Application.appContext = appContext;
+        SpringApplication.run(Application.class, args);
     }
 }

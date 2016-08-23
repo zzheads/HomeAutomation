@@ -1,12 +1,10 @@
 package com.zzheads.HomeAutomation.controller;//
 
-import com.google.gson.Gson;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorNotFound;
 import com.zzheads.HomeAutomation.exceptions.DaoException;
-import com.zzheads.HomeAutomation.model.Control;
-import com.zzheads.HomeAutomation.model.Equipment;
 import com.zzheads.HomeAutomation.model.Room;
+import com.zzheads.HomeAutomation.model.Tree;
 import com.zzheads.HomeAutomation.service.ControlService;
 import com.zzheads.HomeAutomation.service.EquipmentService;
 import com.zzheads.HomeAutomation.service.RoomService;
@@ -81,6 +79,7 @@ public class RoomController {
     @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String getAll() throws DaoException {
         List<Room> rooms = roomService.findAll();
-        return Room.toJsonTree(rooms);
+        //return Room.toJsonTree(rooms);
+        return Tree.toJson(rooms);
     }
 }

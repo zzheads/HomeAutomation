@@ -1,6 +1,8 @@
 package com.zzheads.HomeAutomation.model;//
 
+import com.fasterxml.jackson.core.*;
 import com.google.gson.*;
+import com.google.gson.JsonParseException;
 import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.controller.ControlController;
 import com.zzheads.HomeAutomation.controller.EquipmentController;
@@ -51,6 +53,12 @@ public class Control {
     public Control(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Control(Long controlId, String controlName, BigDecimal controlValue) {
+        this.id = controlId;
+        this.name = controlName;
+        this.value = controlValue;
     }
 
     public Long getId() {
@@ -181,13 +189,20 @@ public class Control {
         }
     }
 
-    private static class ControlValueSerializer implements JsonSerializer<Control> {
+    public static class ControlValueSerializer implements JsonSerializer<Control> {
         @Override
         public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject result = new JsonObject();
             result.addProperty("value", String.valueOf(src.getValue().doubleValue()));
             result.add("_links", src.getValueLinks());
             return result;
+        }
+    }
+
+    public static class ControlValueDeserializer implements JsonDeserializer<BigDecimal> {
+        @Override
+        public BigDecimal deserialize(JsonElement json, Type typeOfSrc, JsonDeserializationContext context) throws JsonParseException {
+            return json.getAsBigDecimal();
         }
     }
 
@@ -208,9 +223,9 @@ public class Control {
         return gson.toJson(equipments);
     }
 
-    public static String toJsonValue(List<Control> equipments) {
+    public static String toJsonValue(List<Control> controls) {
         Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
-        return gson.toJson(equipments);
+        return gson.toJson(controls);
     }
 
     @Override public boolean equals(Object o) {

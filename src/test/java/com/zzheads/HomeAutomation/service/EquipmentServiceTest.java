@@ -61,7 +61,6 @@ public class EquipmentServiceTest {
 
     @Test public void testFindAll() throws Exception {
         Equipment equipment = newEquipment();
-        List<Equipment> equipments1 = equipmentService.findAll();
         equipmentService.save(equipment);
         List<Equipment> equipments = equipmentService.findAll();
         assertEquals(1, equipments.size());

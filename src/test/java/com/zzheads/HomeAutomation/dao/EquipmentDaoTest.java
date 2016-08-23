@@ -61,7 +61,6 @@ public class EquipmentDaoTest {
 
     @Test public void testFindAll() throws Exception {
         Equipment equipment = newEquipment();
-        List<Equipment> equipments1 = equipmentDao.findAll();
         equipmentDao.save(equipment);
         List<Equipment> equipments = equipmentDao.findAll();
         assertEquals(1, equipments.size());
