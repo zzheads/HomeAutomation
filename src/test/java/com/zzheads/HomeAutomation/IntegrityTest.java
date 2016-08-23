@@ -80,7 +80,7 @@ public class IntegrityTest {
 
     @Before public void setUp() throws Exception {
         client = new ApiClient("http://localhost:8080");
-        gsonRoom = new GsonBuilder().registerTypeAdapter(Room.class, new Room.RoomDeserializer()).registerTypeAdapter(Room.class, new Room.RoomSerializer()).registerTypeAdapter(List.class, new Room.ListRoomDeserializer()).setPrettyPrinting().create();
+        gsonRoom = new GsonBuilder().registerTypeAdapter(Room.class, new Room.RoomDeserializer()).registerTypeAdapter(Room.class, new Room.RoomSerializer()).registerTypeAdapter(List.class, new Tree.TreeSerializer()).registerTypeAdapter(List.class, new Tree.TreeDeserializer()).setPrettyPrinting().create();
         gsonEquipment = new GsonBuilder().registerTypeAdapter(Equipment.class, new Equipment.EquipmentDeserializer()).registerTypeAdapter(Equipment.class, new Equipment.EquipmentSerializer()).registerTypeAdapter(List.class, new Equipment.ListEquipmentDeserializer()).setPrettyPrinting().create();
         gsonControl = new GsonBuilder().registerTypeAdapter(Control.class, new Control.ControlDeserializer()).registerTypeAdapter(Control.class, new Control.ControlSerializer()).registerTypeAdapter(List.class, new Control.ListControlDeserializer()).setPrettyPrinting().create();
         gsonValue = new GsonBuilder().registerTypeAdapter(Control.class, new Control.ControlValueSerializer()).registerTypeAdapter(BigDecimal.class, new Control.ControlValueDeserializer()).setPrettyPrinting().create();
@@ -252,6 +252,7 @@ public class IntegrityTest {
         assertEquals(HttpStatus.OK.value(), res.getStatus());
         Equipment found = gsonEquipment.fromJson(res.getBody(), Equipment.class);
 
+        found.setRoom(testingEquipment.getRoom());
         assertEquals(found, testingEquipment);
     }
 

@@ -46,7 +46,7 @@ public class RoomController {
     @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String getAllRooms() throws DaoException {
         List<Room> rooms = roomService.findAll();
-        return Room.toJson(rooms);
+        return Tree.toJson(rooms);
     }
 
     @RequestMapping(value = "/room/{id}", method = RequestMethod.PUT, produces = {"application/json"})
@@ -79,7 +79,6 @@ public class RoomController {
     @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String getAll() throws DaoException {
         List<Room> rooms = roomService.findAll();
-        //return Room.toJsonTree(rooms);
         return Tree.toJson(rooms);
     }
 }

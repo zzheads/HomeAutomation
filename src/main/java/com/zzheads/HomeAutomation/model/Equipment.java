@@ -3,7 +3,6 @@ package com.zzheads.HomeAutomation.model;//
 import com.google.gson.*;
 import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.controller.EquipmentController;
-import com.zzheads.HomeAutomation.controller.RoomController;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -131,9 +130,27 @@ public class Equipment {
             JsonObject jsonObject = json.getAsJsonObject();
             if (jsonObject.get("equipmentName") == null)
                 throw new ApiErrorBadRequest(400, String.format("%s (%s)", EquipmentController.EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
-            Long id = jsonObject.get("equipmentId").getAsLong();
             String name = jsonObject.get("equipmentName").getAsString();
-            return new Equipment(id, name);
+            if (!Objects.equals(jsonObject.get("equipmentId").getAsString(), "null")) {
+                Long id = jsonObject.get("equipmentId").getAsLong();
+                return new Equipment(id, name);
+            }
+            return new Equipment(name);
+        }
+    }
+
+    public static class ListEquipmentSerializer implements JsonSerializer<List<Equipment>> {
+        @Override
+        public JsonElement serialize(List<Equipment> src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonArray result = new JsonArray();
+            for (Equipment e : src) {
+                JsonObject o = new JsonObject();
+                o.addProperty("equipmentId", String.valueOf(e.getId()));
+                o.addProperty("equipmentName", e.getName());
+                o.add("_links", e.getLinks());
+                result.add(o);
+            }
+            return result;
         }
     }
 
@@ -154,26 +171,9 @@ public class Equipment {
         }
     }
 
-    public static class EquipmentTreeSerializer implements JsonSerializer<Equipment> {
-        @Override
-        public JsonElement serialize(Equipment src, Type typeOfSrc, JsonSerializationContext context) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new Control.ControlTreeSerializer()).create();
-            JsonObject result = new JsonObject();
-            result.addProperty("equipmentId", String.valueOf(src.getId()));
-            result.addProperty("equipmentName", src.getName());
-            if (src.getControls() != null && src.getControls().size() > 0) {
-                JsonArray controls = new JsonArray();
-                for (Control c : src.getControls())
-                    controls.add(gson.toJsonTree(c));
-                result.add("controls", controls);
-            }
-            return result;
-        }
-    }
-
     public static String toJson(List<Equipment> equipments) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new EquipmentSerializer()).setPrettyPrinting().create();
-        return gson.toJson(equipments);
+        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListEquipmentSerializer()).create();
+        return gson.toJson(equipments, List.class);
     }
 
     @Override public boolean equals(Object o) {
@@ -184,17 +184,18 @@ public class Equipment {
 
         Equipment equipment = (Equipment) o;
 
-        return getId() != null ?
-            getId().equals(equipment.getId()) :
-            equipment.getId() == null && (getName() != null ?
-                getName().equals(equipment.getName()) :
-                equipment.getName() == null);
-
+        if (getId() != null ? !getId().equals(equipment.getId()) : equipment.getId() != null) return false;
+        if (!getName().equals(equipment.getName())) return false;
+        if (getRoom()!=null) {
+            return equipment.getRoom() != null && (Objects.equals(getRoom().getId(), equipment.getRoom().getId()));
+        }
+        return (equipment.getRoom() == null);
     }
 
     @Override public int hashCode() {
         int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + getName().hashCode();
+        result = 31 * result + (getRoom() != null ? getRoom().hashCode() : 0);
         return result;
     }
 }

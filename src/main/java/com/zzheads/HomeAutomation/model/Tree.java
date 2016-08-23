@@ -27,7 +27,6 @@ public class Tree {
         return gson.toJson(rooms, List.class);
     }
 
-
     public static class TreeSerializer implements JsonSerializer<List<Room>> {
         @Override
         public JsonArray serialize(List<Room> src, Type typeOfSrc, JsonSerializationContext context) {
@@ -88,28 +87,32 @@ public class Tree {
                 rooms.add(new Room(roomId, roomName, squareFootage));
                 Room currentRoom = rooms.get(i);
                 // possible there is equipments
-                JsonArray arrayEquipment = jsonRoom.get("equipments").getAsJsonArray();
-                for (int j=0;j<arrayEquipment.size();j++) {
-                    JsonObject jsonEquipment = arrayEquipment.get(j).getAsJsonObject();
-                    Long equipmentId = jsonEquipment.get("equipmentId").getAsLong();
-                    String equipmentName = jsonEquipment.get("equipmentName").getAsString();
-                    rooms.get(i).addEquipment(new Equipment(equipmentId, equipmentName));
-                    Equipment currentEquipment = currentRoom.getEquipments().get(j);
-                    currentEquipment.setRoom(currentRoom);
-                    // possible there is controls
-                    JsonArray arrayControl = jsonEquipment.get("controls").getAsJsonArray();
-                    for (int k=0;k<arrayControl.size();k++) {
-                        JsonObject jsonControl = arrayControl.get(k).getAsJsonObject();
-                        Long controlId = jsonControl.get("controlId").getAsLong();
-                        String controlName = jsonControl.get("controlName").getAsString();
-                        if (jsonControl.has("value")) {
-                            BigDecimal controlValue = jsonControl.get("value").getAsBigDecimal();
-                            rooms.get(i).getEquipments().get(j).addControl(new Control(controlId, controlName, controlValue));
-                        } else {
-                            rooms.get(i).getEquipments().get(j).addControl(new Control(controlId, controlName));
+                if (jsonRoom.has("equipments") && !jsonRoom.get("equipments").isJsonNull()) {
+                    JsonArray arrayEquipment = jsonRoom.get("equipments").getAsJsonArray();
+                    for (int j = 0; j < arrayEquipment.size(); j++) {
+                        JsonObject jsonEquipment = arrayEquipment.get(j).getAsJsonObject();
+                        Long equipmentId = jsonEquipment.get("equipmentId").getAsLong();
+                        String equipmentName = jsonEquipment.get("equipmentName").getAsString();
+                        rooms.get(i).addEquipment(new Equipment(equipmentId, equipmentName));
+                        Equipment currentEquipment = currentRoom.getEquipments().get(j);
+                        currentEquipment.setRoom(currentRoom);
+                        // possible there is controls
+                        JsonArray arrayControl = jsonEquipment.get("controls").getAsJsonArray();
+                        for (int k = 0; k < arrayControl.size(); k++) {
+                            JsonObject jsonControl = arrayControl.get(k).getAsJsonObject();
+                            Long controlId = jsonControl.get("controlId").getAsLong();
+                            String controlName = jsonControl.get("controlName").getAsString();
+                            if (jsonControl.has("value")) {
+                                BigDecimal controlValue = jsonControl.get("value").getAsBigDecimal();
+                                rooms.get(i).getEquipments().get(j)
+                                    .addControl(new Control(controlId, controlName, controlValue));
+                            } else {
+                                rooms.get(i).getEquipments().get(j)
+                                    .addControl(new Control(controlId, controlName));
+                            }
+                            Control currentControl = currentEquipment.getControls().get(k);
+                            currentControl.setEquipment(currentEquipment);
                         }
-                        Control currentControl = currentEquipment.getControls().get(k);
-                        currentControl.setEquipment(currentEquipment);
                     }
                 }
             }

@@ -67,7 +67,7 @@ public class EquipmentServiceTest {
     }
 
     @Test public void testFindByRoom() throws Exception {
-        Equipment equipment = new Equipment();
+        Equipment equipment = new Equipment("Testing equipment");
         equipmentService.save(equipment);
         Room room = new Room("Test room", 325);
         roomService.save(room);
@@ -76,7 +76,8 @@ public class EquipmentServiceTest {
         equipmentService.save(equipment);
 
         List<Equipment> equipments = equipmentService.findByRoom(room.getId());
-        assertEquals(equipments.get(0), equipment);
+        assertEquals(equipments.get(0).getName(), equipment.getName());
+        assertEquals(equipments.get(0).getId(), equipment.getId());
     }
 
     @Test public void testFindById() throws Exception {

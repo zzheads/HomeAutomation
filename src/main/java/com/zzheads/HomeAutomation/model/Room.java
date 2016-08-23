@@ -9,7 +9,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.util.*;
 
 // HomeAutomation
@@ -137,61 +136,14 @@ public class Room {
             JsonObject jsonObject = json.getAsJsonObject();
             if (jsonObject.get("roomName") == null || jsonObject.get("squareFootage") == null)
                 throw new ApiErrorBadRequest(400, String.format("%s (%s)", RoomController.EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
-            Long id = jsonObject.get("roomId").getAsLong();
             String name = jsonObject.get("roomName").getAsString();
             int squareFootage = jsonObject.get("squareFootage").getAsInt();
-            return new Room(id, name, squareFootage);
-        }
-    }
-
-    public static class ListRoomDeserializer implements JsonDeserializer<List<Room>> {
-        @Override
-        public List<Room> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            JsonArray array = json.getAsJsonArray();
-            List<Room> rooms = new ArrayList<>();
-            for (JsonElement e : array) {
-                JsonObject o = (JsonObject) e;
-                Long id = o.get("roomId").getAsLong();
-                String name = o.get("roomName").getAsString();
-                int squareFootage = o.get("squareFootage").getAsInt();
-
-                rooms.add(new Room(id, name, squareFootage));
+            if (!Objects.equals(jsonObject.get("roomId").getAsString(), "null")) {
+                Long id = jsonObject.get("roomId").getAsLong();
+                return new Room(id, name, squareFootage);
             }
-            return rooms;
+            return new Room(name, squareFootage);
         }
-    }
-
-    public static class RoomTreeSerializer implements JsonSerializer<Room> {
-        @Override
-        public JsonElement serialize(Room src, Type typeOfSrc, JsonSerializationContext context) {
-            Gson gson = new GsonBuilder().registerTypeAdapter(Equipment.class, new Equipment.EquipmentTreeSerializer()).create();
-            JsonObject tree = new JsonObject();
-            tree.addProperty("roomId", String.valueOf(src.getId()));
-            tree.addProperty("roomName", src.getName());
-            tree.addProperty("squareFootage", String.valueOf(src.getSquareFootage()));
-            if (src.getEquipments() != null && src.getEquipments().size() > 0) {
-                JsonArray equipments = new JsonArray();
-                for (Equipment e : src.getEquipments())
-                    equipments.add(gson.toJsonTree(e));
-                tree.add("equipments", equipments);
-            }
-            return tree;
-        }
-    }
-
-    public static Room fromJson(String jsonObject) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomDeserializer()).create();
-        return gson.fromJson(jsonObject, Room.class);
-    }
-
-    public static String toJson(List<Room> rooms) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomSerializer()).setPrettyPrinting().create();
-        return gson.toJson(rooms);
-    }
-
-    public static String toJsonTree(List<Room> rooms) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Room.class, new RoomTreeSerializer()).setPrettyPrinting().create();
-        return gson.toJson(rooms);
     }
 
     @Override public boolean equals(Object o) {

@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 // HomeAutomation
@@ -48,7 +49,8 @@ public class EquipmentController {
     @RequestMapping(value = "/room/{roomId}/equipment", method = RequestMethod.GET, produces = {"application/json"})
     @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String getAllEquipment(@PathVariable Long roomId) throws DaoException {
-        return Equipment.toJson(equipmentService.findByRoom(roomId));
+        List<Equipment> equipments = equipmentService.findByRoom(roomId);
+        return Equipment.toJson(equipments);
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}", method = RequestMethod.PUT, produces = {"application/json"})
@@ -66,7 +68,7 @@ public class EquipmentController {
         room.addEquipment(equipment);
         equipmentService.save(equipment);
         roomService.save(room);
-        return equipmentService.findById(equipmentId).toJson();
+        return equipment.toJson();
     }
 
     @RequestMapping(value = "/room/{roomId}/equipment/{equipmentId}", method = RequestMethod.GET, produces = {"application/json"})

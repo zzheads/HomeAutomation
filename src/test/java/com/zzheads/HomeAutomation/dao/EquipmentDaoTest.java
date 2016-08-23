@@ -67,7 +67,7 @@ public class EquipmentDaoTest {
     }
 
     @Test public void testFindByRoom() throws Exception {
-        Equipment equipment = new Equipment();
+        Equipment equipment = new Equipment("Testing equipment");
         equipmentDao.save(equipment);
         Room room = new Room("Test room", 325);
         roomDao.save(room);
@@ -76,7 +76,8 @@ public class EquipmentDaoTest {
         equipmentDao.save(equipment);
 
         List<Equipment> equipments = equipmentDao.findByRoom(room.getId());
-        assertEquals(equipments.get(0), equipment);
+        assertEquals(equipments.get(0).getName(), equipment.getName());
+        assertEquals(equipments.get(0).getId(), equipment.getId());
     }
 
     @Test public void testFindById() throws Exception {
