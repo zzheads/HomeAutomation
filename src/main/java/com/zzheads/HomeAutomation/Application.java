@@ -18,7 +18,7 @@ package com.zzheads.HomeAutomation;
 //
 //      Extra Credit
 //
-// TODO:     Use a third party mocking library, such as Mockito, for unit testing.
+// DONE:     Use a third party mocking library, such as Mockito, for unit testing.
 // DONE:     Use @ExceptionHandler annotations and @ResponseStatus annotations for exception handling.
 // DONE:     Create a custom endpoint for retrieving all rooms, equipment, controls, and values.
 

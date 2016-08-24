@@ -104,6 +104,28 @@ public class ControlDaoTest {
         assertEquals(0, controlDao.findAll().size());
     }
 
+    @Test(expected = DaoException.class)
+    public void saveControlNullThrowsDaoException() throws Exception {
+        controlDao.save(null);
+    }
+
+    @Test(expected = DaoException.class)
+    public void findByIdControlThrowsDaoException() throws Exception {
+        controlDao.findById(null);
+    }
+
+    @Test(expected = DaoException.class)
+    public void findAllControlThrowsDaoException() throws Exception {
+        ControlDaoImpl fake = new ControlDaoImpl();
+        fake.findAll();
+    }
+
+    @Test(expected = DaoException.class)
+    public void deleteControlNotFoundRoomThrowsDaoException() throws Exception {
+        Control control = new Control(1L, "");
+        controlDao.delete(control);
+    }
+
     private Control newControl () {
         return new Control("Test control");
     }

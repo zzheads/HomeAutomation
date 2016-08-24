@@ -166,5 +166,61 @@ public class ControlControllerTest {
         verify(controlService).delete(testControl);
     }
 
+    // _________________ Some tests for exceptions _________________
 
+    @Test
+    public void addControlWithNoDataThrowsBadRequestExceptionTest() throws Exception {
+        Map<String, String> req = new HashMap<>();
+        req.put("badData", "Bad data");
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.post("/room/1/equipment/1/control").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorBadRequest: Can't make that request. Expected data format: {\"controlName\" : controlName}"));
+        }
+    }
+
+    @Test
+    public void findControlWithBadIdThrowsNotFoundExceptionTest() throws Exception {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.get("/room/1/equipment/1/control/9999").contentType(MediaType.APPLICATION_JSON));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find control with 9999 id."));
+        }
+    }
+
+    @Test
+    public void updateControlWithNoDataThrowsBadRequestExceptionTest() throws Exception {
+        Map<String, String> req = new HashMap<>();
+        req.put("controlName", "New name of control");
+        Map<String, String> badReq = new HashMap<>();
+        badReq.put("badData", "Data bad!");
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.put("/room/1/equipment/1/control/1").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(badReq)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorBadRequest: Can't make that request. Expected data format: {\"controlName\" : controlName}"));
+        }
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.put("/room/1/equipment/1/control/9999").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find control with 9999 id."));
+        }
+    }
+
+    @Test
+    public void deleteControlWithBadIdThrowsNotFoundExceptionTest() throws Exception {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.delete("/room/1/equipment/9999/control/1").contentType(MediaType.APPLICATION_JSON));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find equipment with 9999 id."));
+        }
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.delete("/room/1/equipment/1/control/9999").contentType(MediaType.APPLICATION_JSON));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find control with 9999 id."));
+        }
+    }
 }

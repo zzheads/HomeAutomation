@@ -104,6 +104,28 @@ public class EquipmentDaoTest {
         assertEquals(0, equipmentDao.findAll().size());
     }
 
+    @Test(expected = DaoException.class)
+    public void saveEquipmentNullThrowsDaoException() throws Exception {
+        equipmentDao.save(null);
+    }
+
+    @Test(expected = DaoException.class)
+    public void findByIdEquipmentThrowsDaoException() throws Exception {
+        equipmentDao.findById(null);
+    }
+
+    @Test(expected = DaoException.class)
+    public void findAllEquipmentThrowsDaoException() throws Exception {
+        EquipmentDaoImpl fake = new EquipmentDaoImpl();
+        fake.findAll();
+    }
+
+    @Test(expected = DaoException.class)
+    public void deleteEquipmentNotFoundRoomThrowsDaoException() throws Exception {
+        Equipment equipment = new Equipment(1L, "");
+        equipmentDao.delete(equipment);
+    }
+
     private Control newControl () {
         return new Control("Test control");
     }

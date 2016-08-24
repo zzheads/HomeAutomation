@@ -87,6 +87,32 @@ public class RoomDaoTest {
         assertEquals(0, roomDao.findAll().size());
     }
 
+    //__________________________ DaoException ________________________________
+
+    @Test(expected = DaoException.class)
+    public void deleteRoomNotFoundRoomThrowsDaoException() throws Exception {
+        Room room = new Room(1L, "", 200);
+        RoomDaoImpl fake = new RoomDaoImpl();
+        fake.delete(room);
+    }
+
+    @Test(expected = DaoException.class)
+    public void saveRoomNullThrowsDaoException() throws Exception {
+        roomDao.save(null);
+    }
+
+    @Test(expected = DaoException.class)
+    public void findByIdRoomThrowsDaoException() throws Exception {
+        RoomDaoImpl fake = new RoomDaoImpl();
+        fake.findById(0L);
+    }
+
+    @Test(expected = DaoException.class)
+    public void findAllRoomThrowsDaoException() throws Exception {
+        RoomDaoImpl fake = new RoomDaoImpl();
+        fake.findAll();
+    }
+
     private Control newControl () {
         return new Control("Test control");
     }
