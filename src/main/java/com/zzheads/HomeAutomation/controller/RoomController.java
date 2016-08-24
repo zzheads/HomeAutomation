@@ -33,7 +33,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "/room", method = RequestMethod.POST, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.CREATED)
+    @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String addRoom(@RequestBody Map<String, String> req) throws DaoException {
         if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Room room = new Room(req);
@@ -49,7 +49,7 @@ public class RoomController {
     }
 
     @RequestMapping(value = "/room/{id}", method = RequestMethod.PUT, produces = {"application/json"})
-    @ResponseStatus (HttpStatus.CREATED)
+    @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String updateRoom(@RequestBody Map<String, String> req, @PathVariable Long id) throws DaoException {
         if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
         Room updatingRoom = new Room(req);

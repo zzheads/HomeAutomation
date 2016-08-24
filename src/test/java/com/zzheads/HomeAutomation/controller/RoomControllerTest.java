@@ -80,7 +80,7 @@ public class RoomControllerTest {
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/room").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)))
             .andDo(print())
-            .andExpect(status().isCreated())
+            .andExpect(status().isOk())
             .andReturn();
 
         Room retrieved = gson.fromJson(result.getResponse().getContentAsString(), Room.class);
@@ -114,7 +114,7 @@ public class RoomControllerTest {
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/room/1").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)))
             .andDo(print())
-            .andExpect(status().isCreated())
+            .andExpect(status().isOk())
             .andReturn();
 
         Room retrieved = gson.fromJson(result.getResponse().getContentAsString(), Room.class);

@@ -129,7 +129,7 @@ public class IntegrityTest {
 
         ApiResponse res = client.request("POST", "/room", gsonRoom.toJson(values));
 
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
     }
 
     @SuppressWarnings("unchecked")
@@ -139,21 +139,21 @@ public class IntegrityTest {
         values.put("squareFootage", "325");
 
         ApiResponse res = client.request("POST", "/room", gsonRoom.toJson(values));
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
 
         values.clear();
         values.put("roomName", "Hall");
         values.put("squareFootage", "76");
 
         res = client.request("POST", "/room", gsonRoom.toJson(values));
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
 
         values.clear();
         values.put("roomName", "Garden");
         values.put("squareFootage", "99");
 
         res = client.request("POST", "/room", gsonRoom.toJson(values));
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
 
         res = client.request("GET", "/room");
 
@@ -174,7 +174,7 @@ public class IntegrityTest {
         values.put("roomName", "Garden");
         values.put("squareFootage", "76");
         ApiResponse res = client.request("PUT", "/room/"+testingRoom.getId(), gsonRoom.toJson(values));
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
 
         res = client.request("GET", "/room/"+testingRoom.getId());
         Room updatedRoom = gsonRoom.fromJson(res.getBody(), Room.class);
@@ -224,7 +224,7 @@ public class IntegrityTest {
 
         ApiResponse res = client.request("POST", "/room/"+testingRoom.getId()+"/equipment", gsonEquipment.toJson(values));
 
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
         assertEquals(2, equipmentService.findAll().size());
     }
 
@@ -256,7 +256,7 @@ public class IntegrityTest {
         values.put("equipmentName", "Thermostat");
 
         ApiResponse res = client.request("PUT", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId(), gsonEquipment.toJson(values));
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
 
         Equipment equipment = equipmentService.findById(testingEquipment.getId());
         assertEquals(1, equipmentService.findAll().size());
@@ -290,7 +290,7 @@ public class IntegrityTest {
 
         ApiResponse res = client.request("POST", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control", gsonControl.toJson(values));
 
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
         assertEquals(2, controlService.findAll().size());
     }
 
@@ -323,7 +323,7 @@ public class IntegrityTest {
         values.put("controlName", "Switch");
 
         ApiResponse res = client.request("PUT", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control/"+testingControl.getId(), gsonControl.toJson(values));
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
 
         Control control = controlService.findById(testingControl.getId());
         assertEquals(1, controlService.findAll().size());
@@ -357,7 +357,7 @@ public class IntegrityTest {
         String value = "99.45";
         ApiResponse res = client.request("POST", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control/"+testingControl.getId()+"/value", gsonValue.toJson(value));
 
-        assertEquals(HttpStatus.CREATED.value(), res.getStatus());
+        assertEquals(HttpStatus.OK.value(), res.getStatus());
         BigDecimal retrieved= BigDecimal.valueOf(controlService.findById(testingControl.getId()).getValue().doubleValue());
 
         assertEquals(BigDecimal.valueOf(Double.parseDouble(value)), retrieved);

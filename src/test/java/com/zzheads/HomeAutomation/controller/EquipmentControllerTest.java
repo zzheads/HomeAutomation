@@ -77,7 +77,7 @@ public class EquipmentControllerTest {
         when(roomService.findById(1L)).thenReturn(room);
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/room/1/equipment").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)))
             .andDo(print())
-            .andExpect(status().isCreated())
+            .andExpect(status().isOk())
             .andReturn();
 
         Equipment retrieved = gson.fromJson(result.getResponse().getContentAsString(), Equipment.class);
@@ -128,7 +128,7 @@ public class EquipmentControllerTest {
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/room/1/equipment/1").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)))
             .andDo(print())
-            .andExpect(status().isCreated())
+            .andExpect(status().isOk())
             .andReturn();
 
         Equipment retrieved = gson.fromJson(result.getResponse().getContentAsString(), Equipment.class);

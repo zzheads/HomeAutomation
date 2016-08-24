@@ -94,7 +94,7 @@ public class ControlControllerTest {
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/room/1/equipment/1/control").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)))
             .andDo(print())
-            .andExpect(status().isCreated())
+            .andExpect(status().isOk())
             .andReturn();
 
         Control retrieved = gson.fromJson(result.getResponse().getContentAsString(), Control.class);
@@ -130,7 +130,7 @@ public class ControlControllerTest {
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/room/1/equipment/1/control/1").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)))
             .andDo(print())
-            .andExpect(status().isCreated())
+            .andExpect(status().isOk())
             .andReturn();
 
         Control retrieved = gson.fromJson(result.getResponse().getContentAsString(), Control.class);
