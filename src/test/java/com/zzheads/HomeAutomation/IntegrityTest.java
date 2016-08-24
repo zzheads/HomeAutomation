@@ -318,6 +318,8 @@ public class IntegrityTest {
         ApiResponse res = client.request("GET", "/room/"+testingRoom.getId()+"/equipment/"+testingEquipment.getId()+"/control/"+testingControl.getId());
         assertEquals(HttpStatus.OK.value(), res.getStatus());
         Control found = gsonControl.fromJson(res.getBody(), Control.class);
+        found.setEquipment(testingControl.getEquipment());
+        found.setValue(testingControl.getValue());
 
         assertEquals(found, testingControl);
     }

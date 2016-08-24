@@ -166,9 +166,27 @@ public class Control {
             JsonObject jsonObject = json.getAsJsonObject();
             if (jsonObject.get("controlName") == null)
                 throw new ApiErrorBadRequest(400, String.format("%s (%s)", ControlController.EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
-            Long id = jsonObject.get("controlId").getAsLong();
+
             String name = jsonObject.get("controlName").getAsString();
-            return new Control(id, name);
+            if (jsonObject.has("controlId") && !Objects.equals(jsonObject.get("controlId").getAsString(), "null")) {
+                Long id = jsonObject.get("controlId").getAsLong();
+                return new Control(id, name);
+            }
+            return new Control(name);
+        }
+    }
+
+    public static class ListControlSerializer implements JsonSerializer<List<Control>> {
+        @Override public JsonElement serialize(List<Control> src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonArray result = new JsonArray();
+            for (Control c : src) {
+                JsonObject object = new JsonObject();
+                object.addProperty("controlId", String.valueOf(c.getId()));
+                object.addProperty("controlName", c.getName());
+                object.add("_links", c.getLinks());
+                result.add(object);
+            }
+            return result;
         }
     }
 
@@ -181,9 +199,14 @@ public class Control {
                 if (jsonObject.get("controlName") == null)
                     throw new ApiErrorBadRequest(400, String.format("%s (%s)", ControlController.EXPECTED_REQUEST_FORMAT,
                         Thread.currentThread().getStackTrace()[1].toString()));
-                Long id = jsonObject.get("controlId").getAsLong();
+
                 String name = jsonObject.get("controlName").getAsString();
-                result.add(new Control(id, name));
+                if (jsonObject.has("controlId") && !Objects.equals(jsonObject.get("controlId").getAsString(), "null")) {
+                    Long id = jsonObject.get("controlId").getAsLong();
+                    result.add(new Control(id, name));
+                } else {
+                    result.add(new Control(name));
+                }
             }
             return result;
         }
@@ -218,37 +241,31 @@ public class Control {
         }
     }
 
-    public static String toJson(List<Control> equipments) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlSerializer()).setPrettyPrinting().create();
-        return gson.toJson(equipments);
-    }
-
-    public static String toJsonValue(List<Control> controls) {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Control.class, new ControlValueSerializer()).setPrettyPrinting().create();
-        return gson.toJson(controls);
+    public static String toJson(List<Control> controls) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListControlSerializer()).create();
+        return gson.toJson(controls, List.class);
     }
 
     @Override public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Control))
-            return false;
+        if (this == o) return true;
+        if (!(o instanceof Control)) return false;
 
         Control control = (Control) o;
 
-        return getId() != null ?
-            getId().equals(control.getId()) :
-            control.getId() == null && (getName() != null ?
-                getName().equals(control.getName()) :
-                control.getName() == null && (getValue() != null ?
-                    getValue().equals(control.getValue()) :
-                    control.getValue() == null));
+        if (getId() != null ? !getId().equals(control.getId()) : control.getId() != null) return false;
+        if (!getName().equals(control.getName())) return false;
+        if (getValue() != null ? !getValue().equals(control.getValue()) : control.getValue() != null) return false;
+        if (getEquipment()!=null) {
+            return control.getEquipment() != null && (Objects.equals(getEquipment().getId(), control.getEquipment().getId()));
+        }
+        return (control.getEquipment() == null);
     }
 
     @Override public int hashCode() {
         int result = getId() != null ? getId().hashCode() : 0;
-        result = 31 * result + (getName() != null ? getName().hashCode() : 0);
+        result = 31 * result + getName().hashCode();
         result = 31 * result + (getValue() != null ? getValue().hashCode() : 0);
+        result = 31 * result + (getEquipment() != null ? getEquipment().hashCode() : 0);
         return result;
     }
 }
