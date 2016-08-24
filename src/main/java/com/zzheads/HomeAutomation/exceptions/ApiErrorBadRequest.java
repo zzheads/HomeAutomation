@@ -1,12 +1,8 @@
 package com.zzheads.HomeAutomation.exceptions;//
 
 import com.google.gson.*;
-import com.zzheads.HomeAutomation.model.Control;
 
 import java.lang.reflect.Type;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Map;
 
 // HomeAutomation
 // com.zzheads.HomeAutomation.exceptions created by zzheads on 21.08.2016.
@@ -46,7 +42,7 @@ public class ApiErrorBadRequest extends ApiError {
         return gson.toJson(this, ApiErrorBadRequest.class);
     }
 
-    public static ApiErrorBadRequest fromJson(String jsonString) {
+    public ApiErrorBadRequest fromJson(String jsonString) {
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestSerializer())
             .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestDeserializer())

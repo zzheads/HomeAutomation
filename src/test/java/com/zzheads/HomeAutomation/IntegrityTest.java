@@ -528,10 +528,6 @@ public class IntegrityTest {
             indexRoom++;
         }
 
-
-        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new Room.ListRoomDeserializer()).setPrettyPrinting().create();
-        ApiResponse res = client.request("GET", "/");
-        List<Room> retrievedRooms = gson.fromJson(res.getBody(), List.class);
         assertEquals(lostValue, rooms.get(r).getEquipments().get(e).getControls().get(c).getValue());
     }
 
@@ -569,7 +565,6 @@ public class IntegrityTest {
         assertTrue(errorMsg.containsKey("message"));
         assertTrue(errorMsg.containsKey("status"));
     }
-
 
     private void clearAll() throws DaoException {
         for (Control c : controlService.findAll()) controlService.delete(c);

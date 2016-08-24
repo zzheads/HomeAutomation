@@ -27,10 +27,6 @@ public class ApiError extends RuntimeException {
         this.path = path;
     }
 
-    public ApiError(String message) {
-        super(message);
-    }
-
     public ApiError() {
     }
 

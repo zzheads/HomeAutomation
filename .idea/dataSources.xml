@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="1300438887">
+    <data-source source="LOCAL" name="H2 - HomeAutomation" uuid="e8da89c0-7a3e-4c15-bf77-1c10a0a946d8">
+      <driver-ref>h2.unified</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:tcp://localhost/~/data/HomeAutomation</jdbc-url>
+    </data-source>
+  </component>
+</project>

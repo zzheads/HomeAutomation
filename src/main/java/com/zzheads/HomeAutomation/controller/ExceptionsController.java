@@ -1,7 +1,5 @@
 package com.zzheads.HomeAutomation.controller;//
 
-import com.google.gson.*;
-import com.zzheads.HomeAutomation.exceptions.ApiError;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorNotFound;
 import org.springframework.http.HttpStatus;
@@ -11,11 +9,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Type;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 // HomeAutomation
 // com.zzheads.HomeAutomation.controller created by zzheads on 21.08.2016.

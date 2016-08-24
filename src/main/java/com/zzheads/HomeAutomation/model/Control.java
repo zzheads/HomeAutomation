@@ -1,23 +1,15 @@
 package com.zzheads.HomeAutomation.model;//
 
-import com.fasterxml.jackson.core.*;
 import com.google.gson.*;
 import com.google.gson.JsonParseException;
 import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.controller.ControlController;
-import com.zzheads.HomeAutomation.controller.EquipmentController;
-import com.zzheads.HomeAutomation.controller.RoomController;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 
 import javax.persistence.*;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 // HomeAutomation
 // com.zzheads.HomeAutomation.model created by zzheads on 19.08.2016.
