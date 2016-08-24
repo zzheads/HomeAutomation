@@ -172,5 +172,60 @@ public class EquipmentControllerTest {
         verify(equipmentService).delete(Matchers.any(Equipment.class));
     }
 
+    // _________________ Some tests for exceptions _________________
 
+    @Test
+    public void addEquipmentWithNoDataThrowsBadRequestExceptionTest() throws Exception {
+        Map<String, String> req = new HashMap<>();
+        req.put("badData", "Kitchen");
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.post("/room/1/equipment").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorBadRequest: Can't make that request. Expected data format: {\"equipmentName\" : equipmentName}"));
+        }
+    }
+
+    @Test
+    public void findEquipmentWithBadIdThrowsNotFoundExceptionTest() throws Exception {
+        when(roomService.findById(1L)).thenReturn(new Room());
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.get("/room/1/equipment/9999").contentType(MediaType.APPLICATION_JSON));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find equipment with 9999 id."));
+        }
+    }
+
+    @Test
+    public void updateRoomWithNoDataThrowsBadRequestExceptionTest() throws Exception {
+        Map<String, String> req = new HashMap<>();
+        req.put("equipmentName", "New name of equipment");
+        Map<String, String> badReq = new HashMap<>();
+        badReq.put("badData", "Data bad!");
+        when(roomService.findById(1L)).thenReturn(new Room());
+        when(equipmentService.findById(1L)).thenReturn(new Equipment());
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.put("/room/1/equipment/1").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(badReq)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorBadRequest: Can't make that request. Expected data format: {\"equipmentName\" : equipmentName}"));
+        }
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.put("/room/1/equipment/9999").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find equipment with 9999 id."));
+        }
+    }
+
+    @Test
+    public void deleteRoomWithBadIdThrowsNotFoundExceptionTest() throws Exception {
+        when(roomService.findById(1L)).thenReturn(new Room());
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.delete("/room/1/equipment/9999").contentType(MediaType.APPLICATION_JSON));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find equipment with 9999 id."));
+        }
+    }
 }

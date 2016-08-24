@@ -2,12 +2,10 @@ package com.zzheads.HomeAutomation;//
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.zzheads.HomeAutomation.exceptions.ApiErrorNotFound;
 import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import com.zzheads.HomeAutomation.model.Equipment;
 import com.zzheads.HomeAutomation.model.Room;
-import com.zzheads.HomeAutomation.model.Tree;
 import com.zzheads.HomeAutomation.service.ControlService;
 import com.zzheads.HomeAutomation.service.EquipmentService;
 import com.zzheads.HomeAutomation.service.RoomService;
@@ -20,7 +18,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,10 +77,28 @@ public class IntegrityTest {
 
     @Before public void setUp() throws Exception {
         client = new ApiClient("http://localhost:8080");
-        gsonRoom = new GsonBuilder().registerTypeAdapter(Room.class, new Room.RoomDeserializer()).registerTypeAdapter(Room.class, new Room.RoomSerializer()).registerTypeAdapter(List.class, new Tree.TreeSerializer()).registerTypeAdapter(List.class, new Tree.TreeDeserializer()).setPrettyPrinting().create();
-        gsonEquipment = new GsonBuilder().registerTypeAdapter(Equipment.class, new Equipment.EquipmentDeserializer()).registerTypeAdapter(Equipment.class, new Equipment.EquipmentSerializer()).registerTypeAdapter(List.class, new Equipment.ListEquipmentDeserializer()).setPrettyPrinting().create();
-        gsonControl = new GsonBuilder().registerTypeAdapter(Control.class, new Control.ControlDeserializer()).registerTypeAdapter(Control.class, new Control.ControlSerializer()).registerTypeAdapter(List.class, new Control.ListControlDeserializer()).setPrettyPrinting().create();
-        gsonValue = new GsonBuilder().registerTypeAdapter(Control.class, new Control.ControlValueSerializer()).registerTypeAdapter(BigDecimal.class, new Control.ControlValueDeserializer()).setPrettyPrinting().create();
+        gsonRoom = new GsonBuilder()
+            .registerTypeAdapter(Room.class, new Room.RoomSerializer())
+            .registerTypeAdapter(Room.class, new Room.RoomDeserializer())
+            .registerTypeAdapter(List.class, new Room.ListRoomSerializer())
+            .registerTypeAdapter(List.class, new Room.ListRoomDeserializer())
+            .create();
+        gsonEquipment = new GsonBuilder()
+            .registerTypeAdapter(Equipment.class, new Equipment.EquipmentSerializer())
+            .registerTypeAdapter(Equipment.class, new Equipment.EquipmentDeserializer())
+            .registerTypeAdapter(List.class, new Equipment.ListEquipmentSerializer())
+            .registerTypeAdapter(List.class, new Equipment.ListEquipmentDeserializer())
+            .create();
+        gsonControl = new GsonBuilder()
+            .registerTypeAdapter(Control.class, new Control.ControlSerializer())
+            .registerTypeAdapter(Control.class, new Control.ControlDeserializer())
+            .registerTypeAdapter(List.class, new Control.ListControlSerializer())
+            .registerTypeAdapter(List.class, new Control.ListControlDeserializer())
+            .create();
+        gsonValue = new GsonBuilder()
+            .registerTypeAdapter(Control.class, new Control.ControlValueSerializer())
+            .registerTypeAdapter(BigDecimal.class, new Control.ControlValueDeserializer())
+            .create();
 
         roomService.save(testingRoom);
         equipmentService.save(testingEquipment);
@@ -508,7 +523,7 @@ public class IntegrityTest {
         }
 
 
-        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new Tree.TreeDeserializer()).setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new Room.ListRoomDeserializer()).setPrettyPrinting().create();
         ApiResponse res = client.request("GET", "/");
         List<Room> retrievedRooms = gson.fromJson(res.getBody(), List.class);
         assertEquals(lostValue, rooms.get(r).getEquipments().get(e).getControls().get(c).getValue());

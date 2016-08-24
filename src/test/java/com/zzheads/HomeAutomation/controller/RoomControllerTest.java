@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.model.Room;
-import com.zzheads.HomeAutomation.model.Tree;
 import com.zzheads.HomeAutomation.service.ControlService;
 import com.zzheads.HomeAutomation.service.EquipmentService;
 import com.zzheads.HomeAutomation.service.RoomService;
@@ -54,9 +53,10 @@ public class RoomControllerTest {
     private Gson gson = new GsonBuilder()
         .registerTypeAdapter(Room.class, new Room.RoomSerializer())
         .registerTypeAdapter(Room.class, new Room.RoomDeserializer())
-        .registerTypeAdapter(List.class, new Tree.TreeSerializer())
-        .registerTypeAdapter(List.class, new Tree.TreeDeserializer())
+        .registerTypeAdapter(List.class, new Room.ListRoomSerializer())
+        .registerTypeAdapter(List.class, new Room.ListRoomDeserializer())
         .create();
+    private Gson gsonExc = new Gson();
 
 
     static {
@@ -110,6 +110,7 @@ public class RoomControllerTest {
         req.put("squareFootage", "299");
         Room updatedRoom = new Room(req);
         updatedRoom.setId(1L);
+        when(roomService.findById(1L)).thenReturn(updatedRoom);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/room/1").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)))
             .andDo(print())
@@ -146,5 +147,60 @@ public class RoomControllerTest {
 
         verify(roomService).findById(1L);
         verify(roomService).delete(Matchers.any(Room.class));
+    }
+
+    // _________________ Some tests for exceptions _________________
+
+    @Test
+    public void addRoomWithNoDataThrowsBadRequestExceptionTest() throws Exception {
+        Map<String, String> req = new HashMap<>();
+        req.put("badData", "Kitchen");
+        req.put("squareFootage", "324");
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.post("/room").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorBadRequest: Can't make that request. Expected data format: {\"roomName\" : roomName, \"squareFootage\" : squareFootage}"));
+        }
+    }
+
+    @Test
+    public void findRoomWithBadIdThrowsNotFoundExceptionTest() throws Exception {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.get("/room/9999").contentType(MediaType.APPLICATION_JSON));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find room with 9999 id."));
+        }
+    }
+
+    @Test
+    public void updateRoomWithNoDataThrowsBadRequestExceptionTest() throws Exception {
+        Map<String, String> req = new HashMap<>();
+        req.put("roomName", "Kitchen");
+        req.put("squareFootage", "324");
+        Map<String, String> badReq = new HashMap<>();
+        badReq.put("badData", "Kitchen");
+        badReq.put("BadData!", "324");
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.put("/room/1").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(badReq)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorBadRequest: Can't make that request. Expected data format: {\"roomName\" : roomName, \"squareFootage\" : squareFootage}"));
+        }
+
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.put("/room/9999").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(req)));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find room with 9999 id."));
+        }
+    }
+
+    @Test
+    public void deleteRoomWithBadIdThrowsNotFoundExceptionTest() throws Exception {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.delete("/room/9999").contentType(MediaType.APPLICATION_JSON));
+        } catch (Exception ex) {
+            assertTrue(ex.getMessage().contains("ApiErrorNotFound: Can't find room with 9999 id."));
+        }
     }
 }

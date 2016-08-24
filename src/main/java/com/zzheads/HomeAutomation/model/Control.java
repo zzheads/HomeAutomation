@@ -229,18 +229,6 @@ public class Control {
         }
     }
 
-    public static class ControlTreeSerializer implements JsonSerializer<Control> {
-        @Override
-        public JsonElement serialize(Control src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject result = new JsonObject();
-            result.addProperty("controlId", String.valueOf(src.getId()));
-            result.addProperty("controlName", src.getName());
-            if (src.getValue() != null)
-                result.addProperty("value", String.valueOf(src.getValue().doubleValue()));
-            return result;
-        }
-    }
-
     public static String toJson(List<Control> controls) {
         Gson gson = new GsonBuilder().registerTypeAdapter(List.class, new ListControlSerializer()).create();
         return gson.toJson(controls, List.class);

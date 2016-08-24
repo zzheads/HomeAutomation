@@ -4,7 +4,6 @@ import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
 import com.zzheads.HomeAutomation.exceptions.ApiErrorNotFound;
 import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Room;
-import com.zzheads.HomeAutomation.model.Tree;
 import com.zzheads.HomeAutomation.service.ControlService;
 import com.zzheads.HomeAutomation.service.EquipmentService;
 import com.zzheads.HomeAutomation.service.RoomService;
@@ -46,15 +45,18 @@ public class RoomController {
     @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String getAllRooms() throws DaoException {
         List<Room> rooms = roomService.findAll();
-        return Tree.toJson(rooms);
+        return Room.toJson(rooms);
     }
 
     @RequestMapping(value = "/room/{id}", method = RequestMethod.PUT, produces = {"application/json"})
     @ResponseStatus (HttpStatus.CREATED)
     public @ResponseBody String updateRoom(@RequestBody Map<String, String> req, @PathVariable Long id) throws DaoException {
         if (!requestOk(req)) throw new ApiErrorBadRequest(400, String.format("%s (%s)", EXPECTED_REQUEST_FORMAT, Thread.currentThread().getStackTrace()[1].toString()));
-        Room room = new Room(req);
-        room.setId(id);
+        Room updatingRoom = new Room(req);
+        Room room = roomService.findById(id);
+        if (room == null) throw new ApiErrorNotFound(404, String.format("Can't find room with %d id. (%s)", id, Thread.currentThread().getStackTrace()[1].toString()));
+        room.setName(updatingRoom.getName());
+        room.setSquareFootage(updatingRoom.getSquareFootage());
         roomService.save(room);
         return room.toJson();
     }
@@ -79,6 +81,6 @@ public class RoomController {
     @ResponseStatus (HttpStatus.OK)
     public @ResponseBody String getAll() throws DaoException {
         List<Room> rooms = roomService.findAll();
-        return Tree.toJson(rooms);
+        return Room.toJson(rooms);
     }
 }
