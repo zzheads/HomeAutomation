@@ -2,6 +2,7 @@ package com.zzheads.HomeAutomation;//
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.zzheads.HomeAutomation.exceptions.ApiError;
 import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Control;
 import com.zzheads.HomeAutomation.model.Equipment;
@@ -30,7 +31,8 @@ import static org.junit.Assert.assertTrue;
 // HomeAutomation
 // com.zzheads.HomeAutomation created by zzheads on 23.08.2016.
 //
-@SuppressWarnings("Duplicates")
+@SuppressWarnings({"Duplicates", "ThrowableInstanceNeverThrown",
+    "ThrowableResultOfMethodCallIgnored"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class IntegrityTest {
@@ -373,7 +375,11 @@ public class IntegrityTest {
         assertEquals(value, retrieved);
     }
 
-    private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder()
+        .registerTypeAdapter(ApiError.class, new ApiError.ApiErrorSerializer())
+        .registerTypeAdapter(ApiError.class, new ApiError.ApiErrorDeserializer())
+        .setPrettyPrinting()
+        .create();
 
     // ----------------------------------- Exceptions -----------------------------------------------
 
@@ -529,9 +535,14 @@ public class IntegrityTest {
         assertEquals(lostValue, rooms.get(r).getEquipments().get(e).getControls().get(c).getValue());
     }
 
+    private static final ApiError ERROR_NOT_FOUND = new ApiError(404, "");
+    private static final ApiError ERROR_BAD_REQUEST = new ApiError(400,"");
 
     @SuppressWarnings("unchecked")
     private void assertNotFoundMessage (ApiResponse res) {
+        ApiError error = gson.fromJson(res.getBody(), ApiError.class);
+        assertEquals(ERROR_NOT_FOUND.getStatus(), error.getStatus());
+
         Map<String, String> errorMsg = gson.fromJson(res.getBody(), Map.class);
 
         assertEquals(HttpStatus.NOT_FOUND.value(), res.getStatus());
@@ -545,6 +556,9 @@ public class IntegrityTest {
 
     @SuppressWarnings("unchecked")
     private void assertBadRequestMessage (ApiResponse res) {
+        ApiError error = gson.fromJson(res.getBody(), ApiError.class);
+        assertEquals(ERROR_BAD_REQUEST.getStatus(), error.getStatus());
+
         Map<String, String> errorMsg = gson.fromJson(res.getBody(), Map.class);
 
         assertEquals(HttpStatus.BAD_REQUEST.value(), res.getStatus());
