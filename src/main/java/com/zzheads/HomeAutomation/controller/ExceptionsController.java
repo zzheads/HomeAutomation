@@ -22,15 +22,6 @@ import java.util.Map;
 //
 @ControllerAdvice
 public class ExceptionsController {
-
-    private static final Gson gson = new GsonBuilder()
-        .registerTypeAdapter(ApiErrorNotFound.class, new ApiError.ApiErrorSerializer())
-        .registerTypeAdapter(ApiErrorNotFound.class, new ApiError.ApiErrorDeserializer())
-        .registerTypeAdapter(ApiErrorBadRequest.class, new ApiError.ApiErrorSerializer())
-        .registerTypeAdapter(ApiErrorBadRequest.class, new ApiError.ApiErrorDeserializer())
-        .setPrettyPrinting()
-        .create();
-
     @ExceptionHandler(ApiErrorNotFound.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public @ResponseBody String handleNotFound(HttpServletRequest req, ApiErrorNotFound exc) {
@@ -38,7 +29,7 @@ public class ExceptionsController {
             exc.setPath(req.getPathInfo());
         else
             exc.setPath(req.getServletPath());
-        return gson.toJson(exc);
+        return exc.toJson();
     }
 
     @ExceptionHandler(ApiErrorBadRequest.class)
@@ -48,6 +39,6 @@ public class ExceptionsController {
             exc.setPath(req.getPathInfo());
         else
             exc.setPath(req.getServletPath());
-        return gson.toJson(exc);
+        return exc.toJson();
     }
 }

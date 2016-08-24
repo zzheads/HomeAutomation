@@ -1,36 +1,58 @@
 package com.zzheads.HomeAutomation.exceptions;//
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.zzheads.HomeAutomation.model.Control;
 
+import java.lang.reflect.Type;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Map;
 
 // HomeAutomation
 // com.zzheads.HomeAutomation.exceptions created by zzheads on 21.08.2016.
 //
 public class ApiErrorBadRequest extends ApiError {
-    private int status;
-    private String message;
 
     public ApiErrorBadRequest(int status, String message) {
-        super (message);
-        this.status = status;
-        this.message = message;
+        super (status, message);
     }
 
-    public int getStatus() {
-        return status;
+    public ApiErrorBadRequest(ApiError e) {
+        this.setStatus(e.getStatus());
+        this.setMessage(e.getMessage());
+        this.setPath(e.getPath());
+        this.setStackTrace(e.getStackTrace());
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public static class ApiErrorBadRequestSerializer extends ApiErrorSerializer {
+        public JsonElement serialize(ApiErrorBadRequest src, Type typeOfSrc, JsonSerializationContext context) {
+            return super.serialize(src, typeOfSrc, context);
+        }
     }
 
-    @Override public String getMessage() {
-        return message;
+    public static class ApiErrorBadRequestDeserializer extends ApiErrorDeserializer {
+        public ApiErrorBadRequest deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            ApiError e = super.deserialize(json, typeOfT, context);
+            return new ApiErrorBadRequest(e);
+        }
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+
+    public String toJson() {
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestSerializer())
+            .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestDeserializer())
+            .setPrettyPrinting()
+            .create();
+        return gson.toJson(this, ApiErrorBadRequest.class);
     }
+
+    public static ApiErrorBadRequest fromJson(String jsonString) {
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestSerializer())
+            .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestDeserializer())
+            .create();
+        return gson.fromJson(jsonString, ApiErrorBadRequest.class);
+    }
+
 }

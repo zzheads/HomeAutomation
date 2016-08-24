@@ -6,6 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.zzheads.HomeAutomation.Application;
 import com.zzheads.HomeAutomation.exceptions.ApiError;
+import com.zzheads.HomeAutomation.exceptions.ApiErrorBadRequest;
+import com.zzheads.HomeAutomation.exceptions.ApiErrorNotFound;
 import com.zzheads.HomeAutomation.model.Room;
 import com.zzheads.HomeAutomation.service.RoomService;
 import org.junit.Before;
@@ -69,7 +71,8 @@ public class ExceptionControllerTest {
 
         final ApiError errorNotFound = new ApiError(404, "Can't find room with 999 id. (com.zzheads.HomeAutomation.controller.RoomController.getRoomById(RoomController.java:68))", "/room/999");
         final ApiError errorBadRequest = new ApiError(400, "Can't make that request. Expected data format: {\"roomName\" : roomName, \"squareFootage\" : squareFootage} (com.zzheads.HomeAutomation.controller.RoomController.addRoom(RoomController.java:38))", "/room");
-        ApiError error;
+        ApiErrorNotFound errorNF;
+        ApiErrorBadRequest errorBR;
 
         Room room = new Room("Some tests", 200);
         List<Room> rooms = new ArrayList<>();
@@ -87,8 +90,8 @@ public class ExceptionControllerTest {
             .andExpect(status().isNotFound())
             .andReturn();
 
-        error = ApiError.fromJson(result.getResponse().getContentAsString());
-        assertEquals(errorNotFound, error);
+        errorNF = ApiErrorNotFound.fromJson(result.getResponse().getContentAsString());
+        assertEquals(errorNotFound, errorNF);
 
         Map<String, String> badReq = new HashMap<>();
         badReq.put("There is no roomName", "Testing Room");
@@ -98,8 +101,8 @@ public class ExceptionControllerTest {
             .andExpect(status().isBadRequest())
             .andReturn();
 
-        error = ApiError.fromJson(result.getResponse().getContentAsString());
-        assertEquals(errorBadRequest, error);
+        errorBR = ApiErrorBadRequest.fromJson(result.getResponse().getContentAsString());
+        assertEquals(errorBadRequest, errorBR);
 
     }
 }

@@ -91,6 +91,7 @@ public class ApiError extends RuntimeException {
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(ApiError.class, new ApiErrorSerializer())
             .registerTypeAdapter(ApiError.class, new ApiErrorDeserializer())
+            .setPrettyPrinting()
             .create();
         return gson.toJson(this, ApiError.class);
     }
