@@ -96,13 +96,13 @@ public class ApiError extends RuntimeException {
         return gson.toJson(this, ApiError.class);
     }
 
-    public static ApiError fromJson(String jsonString) {
-        Gson gson = new GsonBuilder()
-            .registerTypeAdapter(ApiError.class, new ApiErrorSerializer())
-            .registerTypeAdapter(ApiError.class, new ApiErrorDeserializer())
-            .create();
-        return gson.fromJson(jsonString, ApiError.class);
-    }
+//    public static ApiError fromJson(String jsonString) {
+//        Gson gson = new GsonBuilder()
+//            .registerTypeAdapter(ApiError.class, new ApiErrorSerializer())
+//            .registerTypeAdapter(ApiError.class, new ApiErrorDeserializer())
+//            .create();
+//        return gson.fromJson(jsonString, ApiError.class);
+//    }
 
     @Override public boolean equals(Object o) {
         if (this == o)

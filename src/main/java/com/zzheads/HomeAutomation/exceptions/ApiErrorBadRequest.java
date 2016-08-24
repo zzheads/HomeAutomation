@@ -37,7 +37,6 @@ public class ApiErrorBadRequest extends ApiError {
         }
     }
 
-
     public String toJson() {
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestSerializer())
