@@ -34,7 +34,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class Application {
     public static final String BASE_URL ="http://localhost:8080/";
     static {
-        System.setProperty("properties.home", "D:/Projects/HomeAutomation/properties/");
+        System.setProperty("properties.home", "/Users/alexeypapin/IdeaProjects/HomeAutomation/properties/");
     }
 
     public static void main(String[] args) {

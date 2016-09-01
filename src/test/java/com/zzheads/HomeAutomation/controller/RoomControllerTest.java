@@ -60,7 +60,7 @@ public class RoomControllerTest {
 
 
     static {
-        System.setProperty("properties.home", "D:/Projects/HomeAutomation/propertiesTest/");
+        System.setProperty("properties.home", "/Users/alexeypapin/IdeaProjects/HomeAutomation/propertiesTest/");
     }
 
     @Before public void setup() {

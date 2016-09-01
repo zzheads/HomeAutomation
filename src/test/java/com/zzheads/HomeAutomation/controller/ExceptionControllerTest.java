@@ -37,7 +37,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.Assert.assertEquals;
 
-@SuppressWarnings("SpringJavaAutowiredMembersInspection")
+
+@SuppressWarnings("SpringJavaAutowiringInspection")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
@@ -50,7 +51,7 @@ public class ExceptionControllerTest {
     private MockMvc mockMvc;
 
     static {
-        System.setProperty("properties.home", "D:/Projects/HomeAutomation/propertiesTest/");
+        System.setProperty("properties.home", "/Users/alexeypapin/IdeaProjects/HomeAutomation/propertiesTest/");
     }
 
     @Before

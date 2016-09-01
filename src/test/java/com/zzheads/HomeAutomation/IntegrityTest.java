@@ -32,17 +32,15 @@ import static org.junit.Assert.assertTrue;
 // com.zzheads.HomeAutomation created by zzheads on 23.08.2016.
 //
 @SuppressWarnings({"Duplicates", "ThrowableInstanceNeverThrown",
-    "ThrowableResultOfMethodCallIgnored"})
+        "ThrowableResultOfMethodCallIgnored", "SpringJavaAutowiringInspection"})
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class IntegrityTest {
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
+
     @Autowired
     private RoomService roomService;
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     private EquipmentService equipmentService;
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     private ControlService controlService;
 
@@ -67,7 +65,7 @@ public class IntegrityTest {
     @SuppressWarnings("AccessStaticViaInstance")
     @BeforeClass
     public static void startServer() {
-        System.setProperty("properties.home", "E:/Projects/HomeAutomation/propertiesTest/");
+        System.setProperty("properties.home", "/Users/alexeypapin/IdeaProjects/HomeAutomation/propertiesTest/");
         String[] args = {PORT, TEST_DATASOURCE};
         Application.main(args);
     }

@@ -33,22 +33,21 @@ import static org.junit.Assert.*;
 // HomeAutomation
 // com.zzheads.HomeAutomation.dao created by zzheads on 22.08.2016.
 //
+@SuppressWarnings("SpringJavaAutowiringInspection")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class EquipmentServiceTest {
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
+
     @Autowired
     ControlService controlService;
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     EquipmentService equipmentService;
-    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     RoomService roomService;
 
 
     static {
-        System.setProperty("properties.home", "E:/Projects/HomeAutomation/propertiesTest/");
+        System.setProperty("properties.home", "/Users/alexeypapin/IdeaProjects/HomeAutomation/propertiesTest/");
     }
 
     @Before public void setUp() throws Exception {
