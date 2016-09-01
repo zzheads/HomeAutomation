@@ -2,6 +2,7 @@ package com.zzheads.HomeAutomation.service;//
 
 import com.zzheads.HomeAutomation.exceptions.DaoException;
 import com.zzheads.HomeAutomation.model.Room;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

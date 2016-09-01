@@ -13,7 +13,7 @@ import java.util.List;
 // com.zzheads.HomeAutomation.dao created by zzheads on 20.08.2016.
 //
 @Repository
-public class RoomDaoImpl extends CrudDaoImpl implements RoomDao {
+class RoomDaoImpl extends CrudDaoImpl implements RoomDao {
     @SuppressWarnings("unchecked")
     @Override public List<Room> findAll() throws DaoException {
         return super.findAll(Room.class);

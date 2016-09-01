@@ -20,13 +20,13 @@ public class ApiErrorBadRequest extends ApiError {
         this.setStackTrace(e.getStackTrace());
     }
 
-    public static class ApiErrorBadRequestSerializer extends ApiErrorSerializer {
+    private static class ApiErrorBadRequestSerializer extends ApiErrorSerializer {
         public JsonElement serialize(ApiErrorBadRequest src, Type typeOfSrc, JsonSerializationContext context) {
             return super.serialize(src, typeOfSrc, context);
         }
     }
 
-    public static class ApiErrorBadRequestDeserializer extends ApiErrorDeserializer {
+    private static class ApiErrorBadRequestDeserializer extends ApiErrorDeserializer {
         public ApiErrorBadRequest deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             ApiError e = super.deserialize(json, typeOfT, context);
             return new ApiErrorBadRequest(e);
@@ -42,7 +42,7 @@ public class ApiErrorBadRequest extends ApiError {
         return gson.toJson(this, ApiErrorBadRequest.class);
     }
 
-    public ApiErrorBadRequest fromJson(String jsonString) {
+    public static ApiErrorBadRequest fromJson(String jsonString) {
         Gson gson = new GsonBuilder()
             .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestSerializer())
             .registerTypeAdapter(ApiErrorBadRequest.class, new ApiErrorBadRequestDeserializer())

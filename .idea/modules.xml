@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HomeAutomation.iml" filepath="$PROJECT_DIR$/HomeAutomation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HomeAutomation.iml" filepath="$PROJECT_DIR$/.idea/modules/HomeAutomation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HomeAutomation_main.iml" filepath="$PROJECT_DIR$/.idea/modules/HomeAutomation_main.iml" group="HomeAutomation" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/HomeAutomation_test.iml" filepath="$PROJECT_DIR$/.idea/modules/HomeAutomation_test.iml" group="HomeAutomation" />
     </modules>
   </component>
 </project>

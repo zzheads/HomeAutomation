@@ -13,6 +13,8 @@ import java.util.List;
 //
 @Service
 public class ControlServiceImpl implements ControlService {
+
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     @Autowired
     private ControlDao controlDao;
 

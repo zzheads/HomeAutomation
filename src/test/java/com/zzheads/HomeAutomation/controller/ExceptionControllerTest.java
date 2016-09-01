@@ -50,7 +50,7 @@ public class ExceptionControllerTest {
     private MockMvc mockMvc;
 
     static {
-        System.setProperty("properties.home", "E:/Projects/HomeAutomation/propertiesTest/");
+        System.setProperty("properties.home", "D:/Projects/HomeAutomation/propertiesTest/");
     }
 
     @Before
@@ -69,8 +69,8 @@ public class ExceptionControllerTest {
             .setPrettyPrinting()
             .create();
 
-        final ApiError errorNotFound = new ApiError(404, "Can't find room with 999 id. (com.zzheads.HomeAutomation.controller.RoomController.getRoomById(RoomController.java:68))", "/room/999");
-        final ApiError errorBadRequest = new ApiError(400, "Can't make that request. Expected data format: {\"roomName\" : roomName, \"squareFootage\" : squareFootage} (com.zzheads.HomeAutomation.controller.RoomController.addRoom(RoomController.java:38))", "/room");
+        final ApiError errorNotFound = new ApiError(404, "Can't find room with 999 id. (com.zzheads.HomeAutomation.controller.RoomController.getRoomById(RoomController.java:69))", "/room/999");
+        final ApiError errorBadRequest = new ApiError(400, "Can't make that request. Expected data format: {\"roomName\" : roomName, \"squareFootage\" : squareFootage} (com.zzheads.HomeAutomation.controller.RoomController.addRoom(RoomController.java:39))", "/room");
         ApiErrorNotFound errorNF;
         ApiErrorBadRequest errorBR;
 

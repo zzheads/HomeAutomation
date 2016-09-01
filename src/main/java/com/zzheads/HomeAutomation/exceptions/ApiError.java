@@ -27,14 +27,14 @@ public class ApiError extends RuntimeException {
         this.path = path;
     }
 
-    public ApiError() {
+    ApiError() {
     }
 
     public int getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    void setStatus(int status) {
         this.status = status;
     }
 
@@ -42,11 +42,11 @@ public class ApiError extends RuntimeException {
         return message;
     }
 
-    public void setMessage(String message) {
+    void setMessage(String message) {
         this.message = message;
     }
 
-    public String getPath() {
+    String getPath() {
         return path;
     }
 

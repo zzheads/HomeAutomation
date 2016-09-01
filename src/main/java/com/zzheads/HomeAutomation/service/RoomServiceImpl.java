@@ -14,6 +14,7 @@ import java.util.List;
 @Service
 public class RoomServiceImpl implements RoomService {
 
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     @Autowired
     private RoomDao roomDao;
 

@@ -59,7 +59,7 @@ public class EquipmentControllerTest {
         .create();
 
     static {
-        System.setProperty("properties.home", "E:/Projects/HomeAutomation/propertiesTest/");
+        System.setProperty("properties.home", "D:/Projects/HomeAutomation/propertiesTest/");
     }
 
     @Before public void setup() {

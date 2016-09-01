@@ -70,7 +70,7 @@ public class ControlControllerTest {
     private Control testControl = new Control(1L, "Name of test Control");
 
     static {
-        System.setProperty("properties.home", "E:/Projects/HomeAutomation/propertiesTest/");
+        System.setProperty("properties.home", "D:/Projects/HomeAutomation/propertiesTest/");
     }
 
     @Before public void setup() throws DaoException {

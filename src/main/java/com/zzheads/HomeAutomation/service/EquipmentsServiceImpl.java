@@ -13,6 +13,8 @@ import java.util.List;
 //
 @Service
 public class EquipmentsServiceImpl implements EquipmentService {
+
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     @Autowired
     private EquipmentDao equipmentDao;
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 // com.zzheads.HomeAutomation.dao created by zzheads on 20.08.2016.
 //
 @Repository
-public class EquipmentDaoImpl extends CrudDaoImpl implements EquipmentDao {
+class EquipmentDaoImpl extends CrudDaoImpl implements EquipmentDao {
 
     @SuppressWarnings("unchecked")
     @Override public List<Equipment> findAll() throws DaoException {

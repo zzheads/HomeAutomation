@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 // com.zzheads.HomeAutomation.dao created by zzheads on 20.08.2016.
 //
 @Repository
-public class ControlDaoImpl extends CrudDaoImpl implements ControlDao {
+class ControlDaoImpl extends CrudDaoImpl implements ControlDao {
     @SuppressWarnings("unchecked")
     @Override public List<Control> findAll() throws DaoException {
         return super.findAll(Control.class);

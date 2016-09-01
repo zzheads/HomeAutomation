@@ -18,6 +18,7 @@ import java.util.Map;
 // HomeAutomation
 // com.zzheads.HomeAutomation.web.controller created by zzheads on 20.08.2016.
 //
+@SuppressWarnings("SpringAutowiredFieldsWarningInspection")
 @Controller
 public class RoomController {
     @Autowired

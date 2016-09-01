@@ -20,13 +20,19 @@ public class ApiErrorNotFound extends ApiError {
         this.setStackTrace(e.getStackTrace());
     }
 
-    public static class ApiErrorNotFoundSerializer extends ApiErrorSerializer {
+    public ApiErrorNotFound(int status, String message, String path) {
+        this.setStatus(status);
+        this.setMessage(message);
+        this.setPath(path);
+    }
+
+    private static class ApiErrorNotFoundSerializer extends ApiErrorSerializer {
         public JsonElement serialize(ApiErrorNotFound src, Type typeOfSrc, JsonSerializationContext context) {
             return super.serialize(src, typeOfSrc, context);
         }
     }
 
-    public static class ApiErrorNotFoundDeserializer extends ApiErrorDeserializer {
+    private static class ApiErrorNotFoundDeserializer extends ApiErrorDeserializer {
         public ApiErrorNotFound deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             ApiError e = super.deserialize(json, typeOfT, context);
             return new ApiErrorNotFound(e);

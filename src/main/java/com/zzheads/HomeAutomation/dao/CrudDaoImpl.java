@@ -12,8 +12,9 @@ import java.util.List;
 // com.zzheads.HomeAutomation.dao created by zzheads on 20.08.2016.
 //
 @Repository
-public class CrudDaoImpl implements CrudDao {
+class CrudDaoImpl implements CrudDao {
 
+    @SuppressWarnings("SpringAutowiredFieldsWarningInspection")
     @Autowired SessionFactory mSessionFactory;
 
     @Override
